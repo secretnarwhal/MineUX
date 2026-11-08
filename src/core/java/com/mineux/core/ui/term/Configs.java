@@ -4,6 +4,7 @@ import com.mineux.core.DeskExtensions;
 import com.mineux.core.Extensions;
 import com.mineux.core.rpc.RpcConfig;
 import com.mineux.core.social.FriendConfig;
+import com.mineux.core.ui.UiConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +85,7 @@ final class Configs {
      */
     static synchronized Map<String, String> personal() {
         Map<String, String> map = new HashMap<>();
-        map.put("ui.json", "how the desktop answers keys: the person's hands, not a loadout");
+        map.put("ui.json", "how big the desktop draws and how it answers keys: the person's screen and hands, not a loadout");
         map.put("accounts.json", "signed-in Minecraft accounts and their tokens");
         map.put("terminal.json", "the workstations themselves, art, history, binds");
         map.put("session.json", "the MineUX sign-in (greeter): the person's own session, never a loadout");
@@ -120,5 +121,7 @@ final class Configs {
         list.add(new Entry("rpc", "rpc.json", RpcConfig::get, () -> { RpcConfig c = RpcConfig.get(); c.ensureDefaults(); c.save(); }));
         // The tray's group switches: which groups are off and what comes back with them. Per workstation, like the modules.
         list.add(new Entry("tray", "tray.json", TrayConfig::get, () -> { TrayConfig c = TrayConfig.get(); c.ensureDefaults(); c.save(); }));
+        // The desktop itself (desk scale, keybind answers): the person's, so personal() keeps it off workstations.
+        list.add(new Entry("ui", "ui.json", UiConfig::get, () -> { UiConfig c = UiConfig.get(); c.ensureDefaults(); c.save(); }));
     }
 }

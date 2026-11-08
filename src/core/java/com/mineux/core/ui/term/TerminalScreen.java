@@ -4,6 +4,7 @@ import com.mineux.core.MineUX;
 import com.mineux.core.Backdrop;
 import com.mineux.core.DeskExtensions;
 import com.mineux.core.greeter.LyConfig;
+import com.mineux.core.ui.DeskScreen;
 import com.mineux.core.ui.Overlay;
 import com.mineux.core.greeter.StreamFill;
 import com.mineux.core.ui.term.Term.Hit;
@@ -72,7 +73,7 @@ import static com.mineux.core.ui.term.Term.*;
  * lives at the top of each terminal's scrollback ({@link ArtView}), and pipes and the bonsai
  * are programs a terminal runs when asked.
  */
-public class TerminalScreen extends Screen implements Desktop {
+public class TerminalScreen extends DeskScreen implements Desktop {
 
     private static final int BAR_H = 16;
     /** How dark a fade between workstations goes at its middle. */
@@ -496,7 +497,6 @@ public class TerminalScreen extends Screen implements Desktop {
     // ---- layout ---------------------------------------------------------
 
     private void initDesk() {
-        super.init();
         area();
         ensureSeeded(baseDesk());
         layout();
@@ -1122,7 +1122,7 @@ public class TerminalScreen extends Screen implements Desktop {
         // CRT scanlines over everything.
         for (int y = 0; y < height; y += 3) g.fill(0, y, width, y + 1, 0x0C000000);
 
-        super.extractRenderState(g, mouseX, mouseY, delta);
+        super.deskRender(g, mouseX, mouseY, delta);
     }
 
     private void animateDesk(Desk desk, float dt) {
@@ -1768,7 +1768,7 @@ public class TerminalScreen extends Screen implements Desktop {
             return true;
         }
 
-        if (hit == null) return super.mouseClicked(event, isHandled);
+        if (hit == null) return super.deskClicked(event, isHandled);
 
         TermWindow win = hit.win();
         if (win != null) desk.focus(win);
@@ -1952,7 +1952,7 @@ public class TerminalScreen extends Screen implements Desktop {
             Slider.drag(slider, sliderX0, sliderX1, sliderHeld, event.x());
             return true;
         }
-        if (dragMode == DRAG_NONE || dragWin == null) return super.mouseDragged(event, dragX, dragY);
+        if (dragMode == DRAG_NONE || dragWin == null) return super.deskDragged(event, dragX, dragY);
 
         float dx = (float) (event.x() - dragStartX);
         float dy = (float) (event.y() - dragStartY);
@@ -2061,7 +2061,7 @@ public class TerminalScreen extends Screen implements Desktop {
         boolean wasDragging = dragMode != DRAG_NONE;
         endDrag();
         layout();
-        return wasDragging || super.mouseReleased(event);
+        return wasDragging || super.deskReleased(event);
     }
 
     /** The tiled pane a dragged one would land beside, or swap with, if dropped here. */
@@ -2140,7 +2140,7 @@ public class TerminalScreen extends Screen implements Desktop {
             win.scrolled(mouseY, verticalAmount);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        return super.deskScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     private Hit hitAt(double mx, double my) {
@@ -2157,10 +2157,13 @@ public class TerminalScreen extends Screen implements Desktop {
      * menu -- the main menu, the Esc menu and the panel key all land on it -- so a bug anywhere
      * in it used to be a crash to desktop for the whole game. Now it is a stack trace in the
      * log, a toast, and vanilla's own menu for the rest of the launch.
+     *
+     * DeskScreen has already put everything in desk units (the desk scale, DeskScale): width
+     * and height, the pose, every mouse position. Nothing here sees the game's GUI scale.
      */
 
     @Override
-    protected void init() {
+    protected void deskInit() {
         try {
             // The tray's item icons ready before the first hover, not on it.
             Tray.prepare();
@@ -2180,7 +2183,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+    protected void deskBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         if (failed) return;
         try {
             drawBackground(g);
@@ -2190,7 +2193,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+    protected void deskRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         if (failed) return;
         try {
             com.mineux.core.ShutdownLayer down = Shutdowns.active();
@@ -2247,7 +2250,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isHandled) {
+    protected boolean deskClicked(MouseButtonEvent event, boolean isHandled) {
         if (Shutdowns.active() != null) return true;
         try {
             return clickDesk(event, isHandled);
@@ -2258,7 +2261,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+    protected boolean deskDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (Shutdowns.active() != null) return true;
         try {
             return dragDesk(event, dragX, dragY);
@@ -2269,7 +2272,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    protected boolean deskReleased(MouseButtonEvent event) {
         if (Shutdowns.active() != null) return true;
         try {
             return releaseDesk(event);
@@ -2280,7 +2283,7 @@ public class TerminalScreen extends Screen implements Desktop {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    protected boolean deskScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         if (Shutdowns.active() != null) return true;
         try {
             return scrollDesk(mouseX, mouseY, horizontalAmount, verticalAmount);

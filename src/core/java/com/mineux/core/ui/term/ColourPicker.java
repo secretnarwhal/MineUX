@@ -390,16 +390,12 @@ final class ColourPicker {
 
     /** The cursor between GUI pixels, for a smooth drag; the whole pixel the frame was given when they disagree. */
     private static double cursorX(int given) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc == null || mc.mouseHandler == null) return given;
-        double exact = mc.mouseHandler.getScaledXPos(mc.getWindow());
+        double exact = com.mineux.core.ui.DeskScale.cursorX();
         return Math.abs(exact - given) < 1.5 ? exact : given;
     }
 
     private static double cursorY(int given) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc == null || mc.mouseHandler == null) return given;
-        double exact = mc.mouseHandler.getScaledYPos(mc.getWindow());
+        double exact = com.mineux.core.ui.DeskScale.cursorY();
         return Math.abs(exact - given) < 1.5 ? exact : given;
     }
 

@@ -57,8 +57,9 @@ final class MenuScene {
         Minecraft mc = Minecraft.getInstance();
         float t = (float) ((System.nanoTime() - START) / 1.0E9 % 7200.0) * config.menuSpeed;
         int accent = SkinConfig.rgb(config.menuAccent, 0xEFC648);
-        float mx = (float) mc.mouseHandler.getScaledXPos(mc.getWindow());
-        float my = (float) mc.mouseHandler.getScaledYPos(mc.getWindow());
+        // In the desk's units: the scene is the home desk's backdrop, drawn at the desk scale.
+        float mx = (float) com.mineux.core.ui.DeskScale.cursorX();
+        float my = (float) com.mineux.core.ui.DeskScale.cursorY();
         float toX = config.menuParallax ? (mx / Math.max(1, width) - 0.5F) * 2.0F : 0.0F;
         float toY = config.menuParallax ? (my / Math.max(1, height) - 0.5F) * 2.0F : 0.0F;
         parallaxX += (toX - parallaxX) * 0.08F;

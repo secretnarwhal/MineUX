@@ -157,8 +157,16 @@ final class ArtView {
                 return found;
             }
         }
+        // Nothing chosen yet: the 3D Diagonal art, wherever it sits in the list.
+        if (state.artName == null && state.art == 0) {
+            int preferred = loaded.names.indexOf(DEFAULT_ART);
+            if (preferred >= 0) return preferred;
+        }
         return Math.floorMod(state.art, loaded.arts.size());
     }
+
+    /** The art shown until one is picked: FIGlet's "3D Diagonal" rendering of the brand. */
+    static final String DEFAULT_ART = "3diagonal";
 
     static String name() {
         return (current() + 1) + "/" + arts().arts.size() + " " + arts().names.get(current());
@@ -427,7 +435,8 @@ final class ArtView {
         float scale = Math.min(1f, Math.min((float) boxW / (cols * CW), (float) (boxH - 4) / (rows * CH)));
         float w = cols * CW * scale;
         float h = rows * CH * scale;
-        float x = boxX + (boxW - w) / 2f;
+        // Toward the left of its box rather than centred: a quarter of the room spare on the left.
+        float x = boxX + (boxW - w) / 4f;
         float y = boxY + (boxH - h) / 2f + (motion ? (float) Math.sin(t * 1.15) * 1.5f : 0f);
         float fadeIn = Math.min(1f, (now - changedAt) / 250f);
 

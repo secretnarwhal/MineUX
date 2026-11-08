@@ -23,6 +23,10 @@
 # registered under that cfg= name (Extensions.addConfig) -- which also makes it per workstation.
 # ConfigRegistryTest enforces it.
 
+dir desk cfg=ui | the desktop itself, yours on every workstation: how big it draws, and what a bound key says
+set scale deskScale choices=auto;1;2;3;4 | how big the desktop draws: a gui scale of its own, so minecraft's gui scale stays yours for the hud and the game's screens. 2 (default) is what it was made at; auto goes by the screen (2 on 1080p, 3 on 1440p, 4 on 4k)
+set announce announceKeybinds | a bound key that changes a setting says so on the actionbar
+
 dir rpc cfg=rpc toggle=enabled stat=rpc | discord rich presence: where you are and what is running, on your discord profile (needs a MineUX discord application id)
 set server showServer | the server's address on the card; off, it says multiplayer
 set modules showModules | how many modules are on
