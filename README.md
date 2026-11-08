@@ -64,4 +64,4 @@ in [CONTRIBUTING.md](CONTRIBUTING.md). Read it before you open a pull request.
 
 ## Credits
 
-Microsoft account sign-in: based on idkhack's MicrosoftLogin by riverxia.
+Microsoft account sign-in: based on code by riverxia.
