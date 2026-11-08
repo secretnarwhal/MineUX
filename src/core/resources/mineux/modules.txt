@@ -1,0 +1,35 @@
+# The terminal's module tree, read by com.mineux.core.ui.term.Modules: core's own few here,
+# then every file added through Extensions.addModuleFile (the visual modules, an extension's).
+#
+#   dir <path> cfg=<binding> [toggle=<field>] [stat=<name>] [act=<name>] [fold] [alias=a,b] | <description>
+#   set <key> <field> [alias=a,b] [label=a_b] [min=<n>] [max=<n>] [pair=<field>] [choices=a;b] [key] | <description>
+#
+# A dir's parent is its path minus the last part. Settings belong to the dir above them.
+# cfg names a config registered under that name (Extensions.addConfig, or core's own in
+# ui/term/Configs.java), or a part of one (DeskExtensions.addConfigPart). pair makes a min/max
+# setting typed as 40-60. In choices and label, '_' stands for a space; label is what a settings
+# window calls the row, the key still being what is typed. key marks a keybind. slider lists it
+# with a slider over min-max; gap is the narrowest a pair may be dragged to, step what a drag
+# rounds to (5 unless given). scale and over show a number in another unit. On a dir, fold makes
+# a settings window open its rows with its switch, stat names a line under them that says what
+# the module last did (DeskExtensions.addStat), and act a button row under them
+# (DeskExtensions.addAct). advanced puts a setting under its module's closed "advanced" section
+# in a settings window and out of a plain ls (ls -a lists it).
+# vulkan=no, on a dir or a set, marks something that needs the OpenGL backend: on Vulkan it is
+# left out of the tree with everything under it, its config value untouched, and help says why.
+# A dir line naming a dir an earlier file made opens it again, to add settings to it.
+#
+# A NEW MODULE: first its dir in a file like this with cfg= and its settings, then its config
+# registered under that cfg= name (Extensions.addConfig) -- which also makes it per workstation.
+# ConfigRegistryTest enforces it.
+
+dir rpc cfg=rpc toggle=enabled stat=rpc | discord rich presence: where you are and what is running, on your discord profile (needs a MineUX discord application id)
+set server showServer | the server's address on the card; off, it says multiplayer
+set modules showModules | how many modules are on
+set button button | the mineux.com button others see under the card
+
+dir friends cfg=friends | your friends: who is online, what they are playing, and what you let them do. on and off only with the friends command (friends on, friends off)
+set autoconnect autoConnect | connect as soon as you sign in, so your friends can see you
+set presence sharePresence alias=share | tell your friends which server you are on and what you are playing
+set banner banner | a card at the top of the screen when a friend turns up somewhere
+set ingame chatInGame | friend news and messages go to the game chat as well as the terminal

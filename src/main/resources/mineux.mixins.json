@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "com.mineux.fabric.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "GuiMixin",
+    "KeyboardHandlerMixin",
+    "MinecraftKeybindMixin",
+    "MinecraftMixin",
+    "MinecraftSessionAccessor",
+    "MouseHandlerMixin",
+    "PauseScreenMixin",
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

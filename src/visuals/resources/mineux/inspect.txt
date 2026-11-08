@@ -1,0 +1,81 @@
+# Inspect keyframes, read by com.mineux.visuals.hand.Inspect.
+#
+# Data rather than Java: as array literals these would be some nine hundred numbers, and the
+# obfuscator turns each literal into code.
+#
+#   <animation> <t> <hand x y z> <hand pitch yaw roll> <item x y z> <item pitch yaw roll>
+#
+# t runs 0 to 1 over the animation; the first key of each is at 0 and the last at 1. Hand
+# moves turn the arm about its own place; item moves turn the item in the hand. Degrees; x is
+# mirrored for a left-handed player.
+
+karambit 0 0 0 0 0 0 0 0 0 0 0 0 0
+karambit 0.14 -0.1 0.1 0.04 -10 -25 18 0 0 0 0 0 0
+karambit 0.22 -0.11 0.11 0.04 -12 -28 20 0 0 0 0 0 -90
+karambit 0.5 -0.12 0.12 0.04 -12 -30 20 0 0 0 0 0 -540
+karambit 0.62 -0.12 0.1 0.04 -8 -30 18 0 0 0 0 0 -720
+karambit 0.78 -0.06 0.06 0.02 12 35 -10 0 0 0 0 0 -720
+karambit 1 0 0 0 0 0 0 0 0 0 0 0 -720
+
+butterfly 0 0 0 0 0 0 0 0 0 0 0 0 0
+butterfly 0.1 -0.08 0.08 0 -5 -15 10 0 0 0 0 0 0
+butterfly 0.2 -0.08 0.09 0 -5 -15 14 0 0 0 180 0 0
+butterfly 0.3 -0.08 0.08 0 -5 -15 6 0 0 0 360 0 0
+butterfly 0.4 -0.08 0.09 0 -5 -10 14 0 0 0 360 180 0
+butterfly 0.5 -0.08 0.08 0 -5 -10 6 0 0 0 540 180 0
+butterfly 0.6 -0.08 0.09 0 -5 -10 14 0 0 0 720 360 0
+butterfly 0.72 -0.1 0.08 0.02 -10 30 -8 0 0 0 720 360 0
+butterfly 0.86 -0.04 0.04 0 5 -20 10 0 0 0 720 360 0
+butterfly 1 0 0 0 0 0 0 0 0 0 720 360 0
+
+flip 0 0 0 0 0 0 0 0 0 0 0 0 0
+flip 0.18 -0.04 0.02 0 15 -10 5 0 0 0 0 0 0
+flip 0.3 -0.04 0.08 0 -10 -10 5 0 0.1 0 -180 0 0
+flip 0.42 -0.04 0.04 0 0 -10 5 0 0.02 0 -360 0 0
+flip 0.7 -0.1 0.08 0.03 -15 -35 15 0 0 0 -360 0 0
+flip 1 0 0 0 0 0 0 0 0 0 -360 0 0
+
+twirl 0 0 0 0 0 0 0 0 0 0 0 0 0
+twirl 0.2 -0.08 0.08 0.03 -15 -20 15 0 0 0 0 90 0
+twirl 0.5 -0.1 0.1 0.04 -20 -25 18 0 0 0 0 360 0
+twirl 0.8 -0.06 0.06 0.02 -5 20 -5 0 0 0 0 720 0
+twirl 1 0 0 0 0 0 0 0 0 0 0 720 0
+
+showcase 0 0 0 0 0 0 0 0 0 0 0 0 0
+showcase 0.22 -0.18 0.06 0.06 -8 -40 22 0 0 0 0 0 0
+showcase 0.45 -0.19 0.07 0.06 -10 -42 24 0 0 0 0 0 0
+showcase 0.68 -0.05 0.1 0.04 -28 30 -12 0 0 0 0 0 0
+showcase 0.85 -0.04 0.09 0.03 -30 32 -14 0 0 0 0 0 0
+showcase 1 0 0 0 0 0 0 0 0 0 0 0 0
+
+huntsman 0 0 0 0 0 0 0 0 0 0 0 0 0
+huntsman 0.25 -0.1 0.1 0.05 -30 -15 40 0 0 0 0 0 0
+huntsman 0.5 -0.1 0.1 0.05 -30 -15 40 0 0 0 0 180 0
+huntsman 0.75 -0.08 0.08 0.03 -15 20 10 0 0 0 0 360 0
+huntsman 1 0 0 0 0 0 0 0 0 0 0 360 0
+
+toss 0 0 0 0 0 0 0 0 0 0 0 0 0
+toss 0.15 0 -0.05 0 10 0 0 0 0 0 0 0 0
+toss 0.25 0 0.03 0 -10 0 0 0 0.15 0 -180 0 0
+toss 0.45 0 -0.02 0 0 0 0 0 0.55 0 -540 90 0
+toss 0.65 0 0 0 0 0 0 0 0.1 0 -900 180 0
+toss 0.75 0 -0.06 0 8 0 0 0 0 0 -1080 180 0
+toss 1 0 0 0 0 0 0 0 0 0 -1080 360 0
+
+spin 0 0 0 0 0 0 0 0 0 0 0 0 0
+spin 0.12 -0.08 0.06 0.02 0 -10 10 0 0 0 0 0 -60
+spin 0.88 -0.08 0.06 0.02 0 -10 10 0 0 0 0 0 -1020
+spin 1 0 0 0 0 0 0 0 0 0 0 0 -1080
+
+gut 0 0 0 0 0 0 0 0 0 0 0 0 0
+gut 0.2 -0.06 0.08 0.03 -20 -10 35 0 0 0 0 0 0
+gut 0.45 -0.06 0.08 0.03 -20 25 -25 0 0 0 0 0 0
+gut 0.6 -0.06 0.08 0.03 -15 0 10 0 0 0 360 0 0
+gut 1 0 0 0 0 0 0 0 0 0 360 0 0
+
+bayonet 0 0 0 0 0 0 0 0 0 0 0 0 0
+bayonet 0.18 -0.08 0.1 0.02 -10 -30 20 0 0 0 0 0 0
+bayonet 0.4 -0.08 0.12 0.02 -10 -30 20 0 0 0 0 360 0
+bayonet 0.62 -0.14 0.06 0.08 30 -50 0 0 0 0 0 360 0
+bayonet 0.8 -0.1 0.06 0.05 20 -40 5 0 0 0 0 360 0
+bayonet 1 0 0 0 0 0 0 0 0 0 0 360 0

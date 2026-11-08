@@ -1,0 +1,10 @@
+# The tests' own module, in the modules.txt format, added through Extensions.addModuleFile.
+dir testmod cfg=testmod toggle=enabled stat=teststat alias=oldtestmod tab=4 | the tests' module
+set strength strength min=0 max=10 | how strong
+set window lo pair=hi min=0 max=500 slider gap=10 | a timing pair, ms
+set mode mode choices=soft;hard | how it goes
+dir testmod/part cfg=testmod.part toggle=on | a part held inside the config
+set range range min=0 max=6 | how far
+# Opens core's friends dir again, to add a setting to it.
+dir friends cfg=friends
+set friendly friendly | a setting an extension added to core's dir

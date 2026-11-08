@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "com.mineux.screens.fabric.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "ScreensCameraMixin",
+    "ScreensEntityCullMixin",
+    "ScreensGameRendererMixin",
+    "ScreensHudMixin",
+    "ScreensKeyboardInputMixin",
+    "ScreensLevelExtractorMixin",
+    "ScreensLevelRendererMixin",
+    "ScreensMinecraftMixin",
+    "ScreensMouseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

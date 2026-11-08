@@ -1,0 +1,18 @@
+[versions]
+# Moving jdk means moving compatibilityLevel in src/main/resources/mineux.mixins.json with it;
+# build.gradle.kts refuses to configure when the two differ.
+jdk = "25"
+minecraft = "26.2"
+fabric-loader = "0.19.3"
+loom = "1.17-SNAPSHOT"
+junit = "5.14.2"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+fabric-loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }

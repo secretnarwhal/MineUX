@@ -1,0 +1,414 @@
+# MineUX's visual modules (full edition only), read after core's own settings tree: registered
+# with Extensions.addModuleFile("/mineux/visuals.txt") by com.mineux.visuals.Visuals.
+#
+# The same format as core's own module file:
+#
+#   dir <path> cfg=<binding> [toggle=<field>] | <description>
+#   set <key> <field> [alias=a,b] [label=a_b] [min=<n>] [max=<n>] [pair=<field>] [choices=a;b] [key] | <description>
+#
+# A dir's parent is its path minus the last part; settings belong to the dir above them. cfg
+# names a config registered with Extensions.addConfig (com.mineux.visuals.VisualConfigs), which
+# makes it per workstation. In choices and label, '_' stands for a space. key marks a keybind.
+# fold opens a settings window's rows with its switch; stat names a line under them that says what
+# the module last did; act a button row (the skin changer's browse files). advanced puts a
+# setting under the module's closed "advanced" section. vulkan=no marks something that needs
+# OpenGL; every visual here runs on both backends (gpu.Shader), so nothing carries it.
+#
+# Which tray group each top-level dir sits in: com.mineux.visuals.Visuals (hud, world, camera, self).
+
+dir view cfg=view | the view: zoom, and clear weather
+set weather clearWeather alias=noweather,ambience | clear weather: no rain, snow or thunder on your screen; the server's weather goes on
+
+dir view/zoom cfg=view toggle=zoom | zoom: hold the key to look closer; the mouse slows to match, so a movement of it covers the same part of the picture
+set key zoomKey key | hold to zoom
+set factor zoomFactor min=1.5 max=12 | how many times closer
+set mode zoomMode choices=instant;smooth_zoom | instant: straight in and straight back out; smooth zoom (default): eased in and out over the time below, the same at any frame rate, with no overshoot
+set time zoomTime min=0.05 max=1 | smooth zoom: seconds to go all the way in, or all the way out
+
+dir camera cfg=camera | your camera: freelook, distance, auto f5, smooth camera, motion blur, no fov, no bob, no hurt cam, stretched picture
+
+dir camera/freelook cfg=camera toggle=freelook | freelook: hold the key to look around without turning; your body and the look the server is shown stay where they are
+set key freelookKey key | hold (or press) to look around
+set hold freelookHold | held; off, a press turns it on and the next off
+set view freelookView choices=back;front;first | where the camera goes while looking around
+
+dir camera/tweaks cfg=camera toggle=cameraTweaks | camera tweaks: the third-person camera's distance
+set distance cameraDistance min=1 max=30 | how far back, blocks (vanilla's is 4)
+
+dir camera/autof5 cfg=camera toggle=autoF5 | auto f5: third person while a container is open, back when it closes
+
+dir camera/smooth cfg=camera toggle=smoothCamera | smooth camera: the camera eases after your look rather than being on it; your aim is not slowed
+set speed smoothSpeed min=0.5 max=30 | how fast it catches up
+set pitch smoothPitch | up and down eased too
+set lag smoothLag | in third person the camera trails you
+set lagspeed smoothLagSpeed min=0.5 max=30 | how fast the trailing camera catches up
+
+dir camera/blur cfg=camera toggle=motionBlur | motion blur: the world smeared along the way you turn; the hand and the hud stay sharp
+set max blurMax min=1 max=20 | the longest streak, hundredths of the screen
+set quality blurQuality choices=low;medium;high | samples a pixel
+set amount blurAmount min=1 max=100 | how strong
+
+dir camera/nofov cfg=camera toggle=noFov | no fov: no zoom out from sprinting, speed, flying or a bow; the spyglass still zooms
+
+dir camera/nobob cfg=camera toggle=noBob | no bob: the world does not bob as you walk; the hand keeps its own
+
+dir camera/nohurt cfg=camera toggle=noHurtCam | no hurt cam: no shake when you are hit
+
+dir camera/aspect cfg=camera toggle=aspect | stretched: the picture drawn wider, as a stretched resolution is
+set stretch aspectStretch min=1 max=2 | how much wider; 1.33 is 4:3 on a 16:9 screen
+
+dir fx cfg=fx toggle=enabled | hit and kill effects, for you only: particles on whoever your hit lands on, a sound, and lightning or a burst when someone dies just after your hit. A crit plays every hit + crit; any other hit plays every hit + noncrit. Only crit and noncrit touch the game's own particles: vanilla keeps them, off or a burst leaves them out for that hit. Your own hits only; other players' crits stay the game's
+set everyhit everyHit alias=particle choices=off;vanilla;crit;magic;flame;soul;heart;totem;spark;rod | a burst on every hit of yours, crit or not, on top of the crit or noncrit one; off and vanilla are the same here (the game draws nothing of its own for a plain hit)
+set crit critHit choices=off;vanilla;crit;magic;flame;soul;heart;totem;spark;rod | on your crits, in place of the game's crit stars (and a sharp weapon's sparkles): vanilla keeps the game's, off shows none
+set noncrit nonCritHit choices=off;vanilla;crit;magic;flame;soul;heart;totem;spark;rod | on your hits that are not crits: vanilla keeps the game's own (a sharp weapon's sparkles), off shows none, a burst replaces them
+set count count min=1 max=60 | how many particles in each burst
+set hitsound hitSound choices=off;ding;bell;pling;chime;crit;levelup;thunder | a sound when your hit lands, crit or not
+set critsound critSound choices=off;ding;bell;pling;chime;crit;levelup;thunder | a sound on top for a crit of yours
+set noncritsound nonCritSound choices=off;ding;bell;pling;chime;crit;levelup;thunder | a sound on top for any other hit of yours
+set kill killEffect choices=off;lightning;totem;flame;soul | on a kill: a lightning strike, a totem's burst, or a spiral of flame
+set killsound killSound choices=off;ding;bell;pling;chime;crit;levelup;thunder | a sound on a kill
+
+dir world cfg=world | the world on your screen only: ambience, no render, particles, item physics, totem pop, sky and world shaders
+
+dir world/ambience cfg=world toggle=ambience | ambience: your own time of day, weather, fog, sky colour and light, on your screen only; the server's go on
+set time time | your own time of day: the sun, moon, stars, sky and daylight as at that hour
+set hour timeOfDay alias=timeofday min=0 max=23999 | ticks into the day: 0 sunrise, 6000 noon, 12000 sunset, 18000 midnight
+set weather weather choices=off;clear;rain;thunder | the weather you see; off for the server's
+set fog fogColour alias=fogcolour | your own fog colour
+set fogcolor fogColor | the fog's colour, #rrggbb
+set fogdistance fogDistance | your own fog distance
+set fogchunks fogChunks min=0 max=32 | where the fog closes in, chunks
+set sky skyColour alias=skycolour | your own sky colour
+set skycolor skyColor | the sky's colour, #rrggbb
+set gradient skyGradient | fade the sky to a second colour as you look down
+set skycolor2 skyColor2 | the sky's second colour, #rrggbb
+set light lightmap alias=lightmap,tint | tint every light in the world
+set lightcolor lightmapColor | the tint, #rrggbb; white for none
+
+dir world/norender cfg=world toggle=noRender | no render: overlays and effects in the way, left undrawn; what they stand for still happens
+set explosions hideExplosions | explosions' particles
+set scoreboard hideScoreboard | the scoreboard on the right
+set nausea hideNausea | the nausea wobble
+set portal hidePortal | the portal swirl
+set spyglass hideSpyglass | the spyglass mask
+set vignette hideVignette | the dark round the screen's edges
+set totem hideTotemAnimation | a popped totem's spin across your screen
+set fire hideFire | the flames over your view while you burn
+
+dir world/particles cfg=world toggle=particles | particles: a fall of something round you wherever you go; snow, glow and rain are this client's own, the rest are the game's
+set particle particle choices=snow;glow;rain;crit;flame;soul;heart;cloud;spark;lava;note;totem;rod;snowflake | what falls
+set rate particleRate min=1 max=40 | new ones a tick
+set radius particleRadius min=4 max=48 | how far round you, blocks
+set height particleHeight min=2 max=24 | how far above you they start, blocks
+set speed particleSpeed min=0.01 max=0.5 | how fast they fall, blocks a tick
+set size particleSize min=0.25 max=4 | how big snow, glow and rain are
+set natural particleNatural | snow, glow and rain in their own colours
+set color particleColor | their first colour, #rrggbb
+set color2 particleColor2 | their second colour, #rrggbb
+set walls particleWalls | seen through walls
+
+dir world/items cfg=world toggle=itemPhysics | item physics: dropped items fall flat and tumble instead of hovering and spinning; a stack shows as a small pile
+set spin itemSpin min=0.1 max=3 | how fast a falling item tumbles
+set bounce itemBounce min=0 max=1 | how much it rocks before it settles
+
+dir world/totems cfg=totempop toggle=enabled | totem pop: an effect on whoever pops a totem, following them -- rising rings, a shockwave, a breaking halo, a rune circle, a burst of rays or a spiral
+set style style choices=ascension;shockwave;halo;runes;supernova;spiral | which effect
+set duration duration min=0.4 max=2.5 | times as long as the effect's own
+set size size min=0.4 max=2.5 | how big
+set opacity opacity min=0.1 max=1 | how solid
+set colors colorMode choices=totem;theme;custom | totem: gold and green; theme: the client's colours; custom: the two below
+set color color | first colour, #rrggbb
+set color2 color2 | second colour, #rrggbb
+set hidevanilla hideVanilla | leave out the game's cloud of totem particles
+set self self | for your own pops (fainter in first person)
+set others others | for everyone else's
+
+dir world/sky cfg=shaders toggle=sky | sky shaders: the sky drawn by a shader of its own -- aurora, galaxy, black hole, storm, sunset and more -- in place of the game's; the fog takes its horizon colour
+set preset skyPreset choices=aurora;galaxy;blackhole;thunderstorm;nebula;synthwave;bloodmoon;dreamscape;glowlines;fog;sunset;abyss;glacier;lagoon;deepsea;molten;prismgrid;flowlines;cells;halorings;neonveil;plasmastorm;crystallattice;quantumtunnel;liquidlight;mandala;etherwaves | which sky
+set natural skyNatural | the preset's own colours
+set color skyColor | first colour, #rrggbb, with natural off
+set color2 skyColor2 | second colour, #rrggbb, with natural off
+set intensity skyIntensity min=0 max=3 | how strong its effects are
+set scale skyScale min=0.25 max=3 | how big its shapes are
+set speed skySpeed min=0 max=5 | how fast it moves
+set rotation skyRotation min=-5 max=5 | how fast the sky turns round, as the stars do
+set stars skyStars min=0 max=3 | how many stars
+set brightness skyBrightness min=0 max=3 | how bright
+set horizon skyHorizon min=0 max=1 | how much the horizon fades into the fog
+set resolution skyResolution choices=full;75;50 | the share of the screen's pixels it is worked out at; less is faster
+set end skyInEnd | in the end too
+set clouds skyHideClouds | no clouds under it
+set sunmoon skySunMoon | keep the sun and the moon
+set fog skyMatchFog | the world's fog in the sky's horizon colour
+set fogdistance skyFogDistance min=8 max=256 advanced | the fog preset's fog distance, blocks
+
+dir world/shader cfg=shaders toggle=world | world shaders: a look over the whole world -- sunlight, contact shadows, god rays, low fog, bloom, colour grading and a vignette -- from a preset and your own strengths
+set preset worldPreset choices=realistic;goldenhour;misty;cinematic;dreamy;stormy;neon;custom | which look
+set quality quality choices=low;medium;high;ultra | how finely shadows, rays and fog are worked out; lower is faster
+set natural worldNatural | the preset's own sun and fog colours
+set suncolor sunColor | the sun's colour, #rrggbb, with natural off
+set fogcolor fogColor | the fog's colour, #rrggbb, with natural off
+set sun sunLight min=0 max=2 | how strong the sunlight is
+set shadows shadows min=0 max=2 | how dark the contact shadows are
+set rays godRays min=0 max=3 | how strong the god rays are
+set fog fog min=0 max=3 | how thick the fog is
+set bloom bloom min=0 max=3 | how much bright things glow
+set exposure exposure min=0.4 max=2.5 | how bright the picture is
+set contrast contrast min=0.5 max=1.6 | contrast
+set saturation saturation min=0 max=2 | colour
+set warmth warmth min=-1 max=1 | cooler or warmer
+set vignette vignette min=0 max=2 | how dark the screen's edges are
+set fogheight fogHeight min=1 max=64 advanced | how high the low fog reaches, blocks
+set clear clearRadius min=0 max=64 advanced | how far round you the fog leaves clear, blocks
+set drift fogDrift min=0 max=4 advanced | how fast the fog drifts
+set sunglow sunGlowInFog advanced | the fog glows toward the sun
+
+dir crosshair cfg=hudskin toggle=crosshair | custom crosshair: any shape, size, thickness and turn, spinning if asked, in one colour, two or the rainbow; opens out as you move, marks your hits, bursts on a kill, rings the attack charge
+set style chStyle choices=cross;dot;circle;crossdot;segments;chevron;diamond;brackets | the shape
+set size chSize min=0 max=40 | arm length, pixels of a 1080p window
+set gap chGap min=0 max=30 | the gap in the middle
+set thickness chThickness min=0.5 max=10 | how thick
+set dot chDot min=0 max=12 | the dot's size (dot, cross and dot, chevron)
+set rotation chRotation min=0 max=360 | degrees it is turned by
+set spin chSpin min=-8 max=8 | quarter turns a second, 0 for still
+set colormode chColorMode alias=mode choices=custom;gradient;chroma | one colour, two blended round it, or the rainbow
+set color chColor | the colour, #rrggbb
+set color2 chColor2 advanced | the second colour for gradient, #rrggbb
+set outline chOutline | a dark outline
+set outlinewidth chOutlineWidth min=0 max=4 advanced | the outline's width
+set glow chGlow min=0 max=2 | a soft halo, 0 for none
+set dynamic chDynamic alias=spread | opens out while you move and in the air
+set expand chExpand | jumps out on your hit
+set hitmarker chHitmarker alias=marker | a marker on your hit
+set hitcolor chHitColor advanced | the hit colour, #rrggbb
+set flash chFlash | flashes the hit colour on your hit
+set shockwave chShockwave | a ring runs out on your hit
+set kill chKill | a burst when the one you just hit dies
+set players chPlayersOnly advanced | only hits on players count
+set target chTarget | turns the target colour on an entity
+set targetcolor chTargetColor advanced | the target colour, #rrggbb
+set cooldown chCooldown | the attack charge as a ring round it
+
+dir hotbar cfg=hudskin toggle=hotbar | custom hotbar: a glass dock with a sliding selection, your health, absorption, armour, food and air as bars, and the experience as a strip
+set slots hbSlots | the slots themselves; off leaves the game's and redraws the bars
+set status hbStatus alias=bars | health, armour, food and air as bars
+set xp hbXp alias=experience | the experience bar and level
+set style hbStyle choices=bars;pips | whole bars or ten pips
+set numbers hbNumbers | the values over the bars
+set slotnumbers hbSlotNumbers | 1-9 on the slots
+set accent hbAccent | the selection's colour, #rrggbb
+set opacity hbOpacity min=0 max=1 | how dark the dock is
+set smooth hbSmooth | the selection slides, the bars ease
+set trail hbTrail | health lost lingers pale before it drains
+set pulse hbPulse | the health bar pulses below a quarter
+set health hbHealth advanced | health colour, #rrggbb
+set absorb hbAbsorb advanced | absorption colour, #rrggbb
+set hunger hbHunger advanced | food colour, #rrggbb
+set armorcolor hbArmor advanced | armour colour, #rrggbb
+set air hbAir advanced | air colour, #rrggbb
+set xpcolor hbXpColor advanced | experience colour, #rrggbb
+set scale hudScale min=0.5 max=3 | how large the hotbar, its bars and the scoreboard are drawn, over the game's gui scale
+set autoscale hudAutoScale | keep them the size they are at gui scale 3 on a 1080p window, whatever the window; scale on top
+
+dir scoreboard cfg=hudskin toggle=scoreboard | custom scoreboard: the sidebar as a glass card, either side, its score numbers left out if you like
+set side sbSide choices=left;right | which side
+set x sbX min=0 max=200 | from the side, pixels
+set y sbY min=-200 max=200 | up or down from the middle, pixels
+set opacity sbOpacity min=0 max=1 | how dark the card is
+set padding sbPadding min=0 max=12 | the space inside the card
+set spacing sbSpacing min=0 max=6 | extra space between lines
+set hidenumbers sbHideNumbers alias=numbers | leave the red score numbers out
+set center sbCenterTitle | the title in the middle
+set border sbBorder | a hairline round the card
+set accent sbAccent choices=line;bar;none | a line under the title or a bar down the outer edge
+set shadow sbShadow | text shadow
+set animate sbAnimate | the card eases to a new height
+
+dir chat cfg=hudskin toggle=chat | custom chat: timestamps, repeats folded into one with a count, a thousand lines kept, a glass background and new lines sliding in
+set timestamps chatTimestamps alias=time | a time on every line
+set format chatTimeFormat choices=24h;24hs;12h | 24 hour, with seconds, or 12 hour
+set antispam chatAntiSpam alias=stack | a message the same as one of the last few comes back as that one, with a count
+set range chatSpamRange min=1 max=50 | how many messages back a repeat is looked for
+set history chatHistory | keep 1000 lines instead of 100
+set background chatBackground choices=panel;vanilla;none | the lines' background
+set opacity chatOpacity min=0 max=1 | the panel's opacity
+set accent chatAccentBar | a gold edge down the lines
+set animation chatAnimation choices=slide;fade;none | how a new line comes in
+set speed chatSpeed min=0.2 max=5 | how fast it comes in
+
+dir menu cfg=hudskin | the main menu's look: the terminal desktop over black, or over an animated scene
+set skin menuSkin choices=terminal;scene | terminal: as ever; scene: the same desktop over an animated scene
+set scene menuScene choices=aurora;nebula;rain;bokeh;silk;grid | which scene
+set speed menuSpeed min=0 max=3 | how fast it moves
+set parallax menuParallax | moves a little with the mouse
+set spotlight menuSpotlight min=0 max=2 | a soft light following the cursor
+set account menuAccount | your face and name in the corner
+set accent menuAccent | the scene's colour, #rrggbb
+
+dir menu/theme cfg=hudskin toggle=themeTextures | theme textures: the game's menus, buttons and hud sprites tinted toward one colour; reloads the resources when changed
+set strength themeStrength min=0 max=1 | how far toward the colour
+set color themeColor | the colour, #rrggbb
+set scope themeScope choices=gui;all | gui textures only, or block and item textures too
+dir self cfg=self | your own player as you see it: your body in first person, walk styles, jump rings, another model or skin, armour in a material. your screen only, none of it is sent
+
+dir self/body cfg=self toggle=body | body view: your body under you in first person, without the head the camera is in
+set arms bodyArms | its arms too (the hand already draws one)
+set offset bodyOffset min=0 max=0.8 | how far behind the camera the body stands, blocks
+set shadow bodyShadow | its shadow
+set hideswim bodyHideSwimFly alias=hidefly | not while swimming or flying an elytra
+
+dir self/moves cfg=self toggle=moves | move animations: your walk in a style -- leaning into speed and turns, tucked in the air, settling on landing
+set style moveStyle choices=natural;athletic;relaxed;confident;ninja;levitate;zombie;robot;swagger | the walk
+set strength moveStrength min=0 max=1 | how much of the style, over the game's walk
+set lean moveLean | lean into turns and speed
+set settle moveSettle | dip on landing
+set bounce moveBounce | bob with the step
+set others moveOthers | everyone else's walk too
+
+dir self/jump cfg=self toggle=jump | jump effect: a ring on the ground where you jump or land
+set trigger jumpTrigger choices=jump;land;both | when
+set style jumpStyle choices=ripple;shockwave;rune;bloom;corona;vortex;spectrum;cloud;endrod;crit;flame;soul;happy | a drawn ring, or a ring of particles
+set sprinting jumpSprintOnly | jumps only while sprinting
+set size ringSize min=0.1 max=6 | how wide a drawn ring spreads, blocks
+set time ringTime min=0.05 max=5 | how long a drawn ring lasts, seconds
+set color ringColor | the ring's colour, #rrggbb
+set color2 ringColor2 | its second colour, #rrggbb
+set walls ringWalls | drawn rings through walls
+set radius jumpRadius min=0.1 max=3 advanced | the particle ring's radius, blocks
+set points jumpPoints min=4 max=64 advanced | particles in the ring
+
+dir self/model cfg=self toggle=model | player model: in third person you are something else -- the parka, the dress, or a model of yours from config/mineux/models (.bbmodel .obj .glb .gltf)
+set kind modelKind choices=parka;dress;custom | which
+set file modelFile | the custom model's file name in config/mineux/models
+set scale modelScale min=0.1 max=4 | its size
+set height modelHeight min=0.2 max=8 | the custom model's height, blocks
+set limbs modelLimbs | a custom model's arms, legs and head move, where they can be found
+set bob modelBob | it bobs as it walks
+set yaw modelYaw min=-180 max=180 advanced | turns a custom model that faces the wrong way, degrees
+set zup modelZUp advanced | the custom model was made with z up
+set lit modelLit | lit like the world, not flat
+set walls modelWalls | through walls
+
+dir self/skin cfg=self toggle=skin act=skinbrowse stat=skin | skin changer: another skin on you, as only you see it -- a png in config/mineux/skins (browse files copies one in), default, or another player's
+set file skinFile | the png's name in config/mineux/skins, or default; browse files picks one and sets it, and opens on the skins chosen before
+set copy skinCopy | wear this player's skin instead
+set model skinModel choices=auto;slim;wide | the arms it goes on
+
+dir self/armor cfg=self toggle=armor | armour shaders: armour drawn in a material -- glass, crystal, hologram, molten, void, chrome, neon wire, frost
+set material armorMaterial choices=glass;crystal;hologram;molten;void;chrome;neon;frost | the material
+set self armorSelf | on your armour
+set others armorOthers | on everyone else's
+set natural armorNatural | in the material's own colour
+set color armorColor | your colour instead, #rrggbb
+set opacity armorOpacity min=0.1 max=1 | how solid
+dir cosmetics cfg=cosmetics toggle=enabled | cosmetics, drawn on this client only and seen by nobody else: a cape, wings, a hat, an aura, an effect where someone you kill falls, and a pet that follows you
+set cape cape choices=off;cute_anime_girl;sakura;kitsune;neko;starlight;koi;aurora;nebula;flow;circuit;prism;custom | your cape (and your elytra's texture), in place of your skin's. cute anime girl shows config/mineux/capes/cute-anime-girl.png, custom the picture capefile names there; a cape texture (64x32 or a multiple, like 512x256) or any picture, which is cropped to fit (README.txt in that folder)
+set capefile capeFile | for the custom cape: a PNG's name in config/mineux/capes/, like mycape for mycape.png; a new or changed file shows within a second
+set wings wings choices=off;angel;dragon;butterfly;phoenix;crystal;cyber;fairy;classic | wings on your back; they beat as you move and glide when you do
+set hat hat choices=off;catears;foxears;bunnyears;bearears;demonhorns;stag;reindeer;unicorn;viking;halo;doublehalo;thornhalo;orbs;runichalo;crown;spikedcrown;laurel;tiara;flamecrown;icecrown;floatingcrown;chinahat | ears, horns, a halo, a crown or a china hat
+set aura aura choices=off;shards;swords;orbs;runes;rings;sphere;arcs;runecircle;flame;frost;void;sakura;storm | round you: shards, swords, orbs, runes or rings orbiting you, an energy sphere that ripples where you are hit, lightning arcs, a rune circle at your feet, or flame, frost, void, sakura or storm; faster and wider as you run
+set kill kill choices=off;shockwave;shatter;strike;blackhole;phoenix;ascend | where someone you kill falls (a death just after your hit): a shockwave, the body shattering, a lightning strike, a black hole, a phoenix or an ascent
+set pet pet choices=off;knight;wizard;astronaut;ninja;dog;cat;bunny;penguin | a pet at your side: it walks after you, jumps what it has to, looks at you and waves when you stand still
+set color color | the first colour, #rrggbb
+set color2 color2 alias=secondcolor | the second colour, #rrggbb
+set natural natural | a style with colours of its own (the elements, the soul flame, the strike, the black hole, the phoenix, the ascent) keeps them
+set scale scale min=0.25 max=3 | how big
+set opacity opacity min=0.05 max=1 | how solid
+set animate animate | moving; off holds every cosmetic still
+set hatfp hatFirstPerson alias=hatfirstperson advanced | the hat in first person too
+set aurafp auraFirstPerson alias=aurafirstperson advanced | the aura in first person too
+set hatheight hatHeight min=-0.5 max=1 advanced | the hat higher or lower, blocks
+set flap flapSpeed min=0 max=4 advanced | how fast the wings beat
+set count auraCount min=1 max=16 advanced | how many things orbit you, and lightning arcs
+set radius auraRadius min=0.3 max=3 advanced | how far out the aura is
+set speed auraSpeed min=-2 max=2 advanced | how fast it turns, turns a second; below 0 the other way
+set react auraReact min=0 max=2 advanced | how much faster and wider it gets as you run; 0 not at all
+set petside petSide choices=right;left;behind advanced | where the pet keeps to
+set petdistance petDistance min=0.5 max=4 advanced | how far from you it keeps, blocks
+set petspeed petSpeed min=0.2 max=3 advanced | how fast it catches up
+set petscale petScale min=0.3 max=3 advanced | how big the pet is
+dir hand cfg=hand | your hand and the item in it, drawn only: where each hand sits, your arm holding the item, old swings, inspect, the glint colour, shaders; the swing and its packet stay the game's own
+
+dir hand/viewmodel cfg=hand toggle=viewModel fold | view model: each hand moved, turned and scaled on your screen
+set mirror vmMirror | the off hand as the main hand's mirror image; its own numbers are not used
+set x vmMainX min=-1 max=1 label=main_x | main hand: right (+) or left (-)
+set y vmMainY min=-1 max=1 label=main_y | main hand: up or down
+set z vmMainZ min=-1 max=1 label=main_z | main hand: away (-) or nearer (+)
+set rotx vmMainRotX min=-180 max=180 label=main_pitch | main hand: turned about the x axis, degrees
+set roty vmMainRotY min=-180 max=180 label=main_yaw | main hand: turned about the y axis, degrees
+set rotz vmMainRotZ min=-180 max=180 label=main_roll | main hand: turned about the z axis, degrees
+set scale vmMainScale min=0.1 max=3 label=main_scale | main hand: size
+set offx vmOffX min=-1 max=1 label=off_x | off hand: right (+) or left (-)
+set offy vmOffY min=-1 max=1 label=off_y | off hand: up or down
+set offz vmOffZ min=-1 max=1 label=off_z | off hand: away (-) or nearer (+)
+set offrotx vmOffRotX min=-180 max=180 label=off_pitch | off hand: turned about the x axis, degrees
+set offroty vmOffRotY min=-180 max=180 label=off_yaw | off hand: turned about the y axis, degrees
+set offrotz vmOffRotZ min=-180 max=180 label=off_roll | off hand: turned about the z axis, degrees
+set offscale vmOffScale min=0.1 max=3 label=off_scale | off hand: size
+
+dir hand/handview cfg=hand toggle=handView fold | hand view: your own arm holding the item, as it is held in third person; the arm swings and the item goes with it
+set style hvStyle choices=grip;overlay | grip: arm and item drawn together; overlay: vanilla's item, your arm drawn under it
+set offhand hvOffHand | the off hand too
+set sleeve hvSleeve | your skin's sleeve on the arm
+set x hvOffsetX min=-1 max=1 | the arm moved out (+) or in (-)
+set y hvOffsetY min=-1 max=1 | the arm moved up or down
+set z hvOffsetZ min=-1 max=1 | the arm moved away (-) or nearer (+)
+set rotation hvRotation min=-90 max=90 | the arm turned, degrees
+set useanims hvUseAnims alias=useanim | the arm's own use animations: food to the mouth, a shield across, a bow drawn back, a spear wound up, a crossbow levelled
+set usespeed hvUseSpeed min=0.2 max=3 | how fast the use animations ease in and out
+
+dir hand/animations cfg=hand toggle=animations | swing animations for the main hand, held still with no dip on a swap: old, 1.7's swing; block, 1.7's block-hit; push, the block pushed side to side; down, the blade brought down; spin, a full turn; smooth, stab, slice, windmill, combo (three in a row), dance (four), charge (three and a slam), momentum (spins up with each swing), whirlwind
+set mode animMode choices=old;block;push;down;spin;smooth;stab;slice;windmill;combo;dance;charge;momentum;whirlwind | which swing
+set strength animStrength min=20 max=75 | how far the block-hit swings chop, and how big the others are
+
+dir hand/swingspeed cfg=hand toggle=swingSpeed | swing speed: your swing drawn slower or faster on your screen; the real swing, its timing and its packet stay the game's
+set ticks swingTicks min=1 max=20 | ticks the drawn swing takes; the game's is 6
+
+dir hand/noswing cfg=hand toggle=noSwing | no swing: your own first-person swing not drawn; you still swing, and the server still sees it
+
+dir hand/inspect cfg=hand toggle=inspect fold | inspect: a knife-style inspect of the item in your main hand on a key press; swinging, using or switching away cuts it short
+set key inspectKey key | plays the inspect
+set anim inspectAnim choices=auto;random;karambit;butterfly;flip;twirl;showcase;huntsman;toss;spin;gut;bayonet | which animation; auto picks by the item
+set onswitch inspectOnSwitch | play it whenever you switch to an item
+set duration inspectDuration min=0.3 max=5 | seconds it lasts
+set speed inspectSpeed min=0.1 max=4 | how fast it plays
+set intensity inspectIntensity min=0 max=2 | how far the arm moves
+set smooth inspectSmooth min=0 max=1 | eased in and out at its ends
+set cancel inspectCancel | attacking or using cuts it short
+set hideoff inspectHideOff | the off hand hidden while it plays
+set empty inspectEmpty | an empty hand too
+
+dir hand/glint cfg=hand toggle=glint | glint colour: every enchanted item and piece of armour shimmers in your colour, on your screen only
+set color glintColor alias=colour | the colour, #rrggbb
+
+dir hand/shaders cfg=hand toggle=shaders fold | hand shaders: an effect over your first-person hand and its item. chroma: moving rainbow bands; invert: inverted colours; outline: a line round it; pixelate: big pixels; prism: pools of light in your accent colours
+set shader shader choices=chroma;invert;outline;pixelate;prism | which effect
+set speed chromaSpeed min=0 max=3 | chroma: how fast the bands move
+set saturation chromaSaturation min=0 max=1 | chroma: how strong the colours are
+set brightness chromaBrightness min=0 max=1 | chroma: how bright
+set invert invertIntensity min=0 max=1 | invert: how far
+set glow edgeGlow min=0 max=3 | invert: a glowing rim, how bright
+set glowcolor glowColor alias=glowcolour | invert: the rim's colour, #rrggbb
+set outlinecolor outlineColor alias=outlinecolour | outline: the line's colour, #rrggbb
+set thickness outlineThickness min=0.5 max=8 | outline: how thick, px at 1080p
+set tint tint | outline: the hand tinted as well
+set tintcolor tintColor alias=tintcolour | outline: the tint, #rrggbb
+set tintamount tintAmount min=0 max=1 | outline: how strong the tint is
+set pixel pixelSize min=2 max=24 | pixelate: how big the pixels are, px at 1080p
+set accent accent | prism: the first colour, #rrggbb
+set accent2 accent2 | prism: the second colour, #rrggbb
+
+dir trail cfg=trail toggle=enabled | cursor trail: a fading trail behind the cursor on the game's screens
+set life lifetimeMs min=50 max=500 | trail lifetime, ms
+set spacing stampSpacingPx min=1 max=64 | stamp spacing, px
+set size spriteSizePx min=4 max=256 | sprite size, px
+set tail tailSizeScale min=0 max=2 | tail size scale
+set velocity useVelocitySize | size by speed
+set intensity velocitySizeIntensity min=0 max=1 | velocity size intensity
+set gradient useGradient | fade to the tail colour
+set opacity opacity min=0 max=1 | opacity
+
+dir cursor cfg=cursor toggle=enabled | fake cursor: a sprite of its own in place of the system cursor on the game's screens
+set size sizePx min=4 max=128 | size, px
+set opacity opacity min=0 max=1 | opacity
+

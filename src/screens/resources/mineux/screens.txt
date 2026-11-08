@@ -1,0 +1,24 @@
+# Screens' part of the settings tree (Extensions.addModuleFile), in modules.txt's format:
+#
+#   dir <path> cfg=<binding> [toggle=<field>] | <description>
+#   set <key> <field> [alias=a,b] [label=a_b] [min=<n>] [max=<n>] [slider] | <description>
+#
+# cfg=screens is com.mineux.screens.ScreensConfig (config/mineux/screens.json), registered per
+# workstation through Extensions.addConfig; its keys are personal fields (one set everywhere).
+# Which screens exist and which are shared is never saved.
+
+dir screens cfg=screens toggle=enabled | your monitors and windows as screens in the world
+set fps captureFps min=1 max=120 slider | how often your screens are captured at most, frames a second
+set density pixelsPerBlock min=100 max=2000 slider label=pixels_per_block | how many pixels of a screen fit on one block; higher makes every screen smaller
+set curve curvature min=0 max=100 slider label=curvature | bend every screen around you, 0 flat to 100 a half circle
+set clickable clickable | clicking a screen switches to its window and puts the cursor where you clicked; nothing is ever clicked or typed into it
+set draggable draggable | with clickable off, clicking a screen picks it up to move it
+set menu menuKey key label=menu_key | opens the screens menu
+set freecam freecamKey key label=freecam_key | flies a freecam to arrange your screens
+set back backKey key label=back_to_game | with Ctrl+Alt, brings the game back after clicking into a window
+
+dir screens/share cfg=screens toggle=watchOthers | see the screens your friends share on your server, live
+set range watchRange min=8 max=96 slider | how near a friend's shared screen has to be to be shown, blocks
+set fps shareFps min=1 max=10 slider | frames a second your shared screens send at most (only while someone watches)
+set quality shareQuality min=20 max=90 slider | JPEG quality of your shared screens, percent
+set width shareWidth min=320 max=1280 slider | widest your shared screens are sent, pixels
