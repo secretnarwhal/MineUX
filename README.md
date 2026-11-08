@@ -52,10 +52,10 @@ missing, it uses an existing `native/target/release/screens.dll` instead.
 
 ## Licence
 
-MineUX is source-available under the
-[PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, change and share it for
-noncommercial purposes. Commercial use is not allowed. See [LICENSE.md](LICENSE.md) for the full
-terms.
+All rights reserved. The source is published so you can read it; it is not open source. You
+may download the official releases and play with them, and build the code yourself for your own
+use. Anything else (copying, redistributing, selling, or publishing modified versions) needs our
+written permission. See [LICENSE.md](LICENSE.md).
 
 ## Contributing
 

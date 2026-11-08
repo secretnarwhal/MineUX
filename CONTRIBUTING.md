@@ -1,8 +1,8 @@
 # Contributing to MineUX
 
-Thanks for wanting to help. MineUX's source is published as source-available under the
-[PolyForm Noncommercial License 1.0.0](LICENSE.md). Anyone may use, change and share it for
-noncommercial purposes; selling it, or anything built from it, needs the owner's permission.
+Thanks for wanting to help. MineUX is not open source: its code is published for reading, and
+all rights are reserved (see [LICENSE.md](LICENSE.md)). Contributing is entirely voluntary, and
+MineUX owes contributors no credit, payment or anything else for what they send.
 
 Because the owner may also offer MineUX under other terms (including commercial or
 closed-source ones), every contribution comes in under the **MineUX Contributor Agreement**
