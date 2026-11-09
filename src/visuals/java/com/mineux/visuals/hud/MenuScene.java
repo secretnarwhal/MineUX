@@ -1,7 +1,6 @@
 package com.mineux.visuals.hud;
 
 import com.mojang.authlib.GameProfile;
-import com.mineux.visuals.hud.SkinConfig;
 import com.mineux.visuals.ui.Theme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -16,7 +15,7 @@ import java.util.function.Supplier;
 
 /**
  * The main menu's scene skin: the desktop as ever, over an animated scene in place of its black
- * -- an aurora, a nebula, rain, bokeh, silk or a horizon grid -- in the accent colour, moving a
+ * -- an aurora, a nebula, rain, bokeh, silk, a horizon grid or a picture -- in the accent colour, moving a
  * little with the mouse, with a soft light following the cursor and your face and name in the
  * corner. Clarity's menu scenes, redrawn with the GUI's own rectangles. The terminal skin, the
  * default, is the plain black the desktop always had.
@@ -66,12 +65,15 @@ final class MenuScene {
 
         MenuScenes.Frame frame = new MenuScenes.Frame(g, width, height, t, accent, parallaxX, parallaxY);
         String scene = config.menuScene;
-        if (Objects.equals("nebula", scene)) MenuScenes.nebula(frame);
-        else if (Objects.equals("rain", scene)) MenuScenes.rain(frame);
-        else if (Objects.equals("bokeh", scene)) MenuScenes.bokeh(frame);
-        else if (Objects.equals("silk", scene)) MenuScenes.silk(frame);
-        else if (Objects.equals("grid", scene)) MenuScenes.grid(frame);
-        else MenuScenes.aurora(frame);
+        switch (scene) {
+            case "nebula": MenuScenes.nebula(frame); break;
+            case "rain": MenuScenes.rain(frame); break;
+            case "bokeh": MenuScenes.bokeh(frame); break;
+            case "silk": MenuScenes.silk(frame); break;
+            case "grid": MenuScenes.grid(frame); break;
+            case "picture": MenuScenes.picture(frame); break;
+            default: MenuScenes.aurora(frame); break;
+        }
 
         if (config.menuSpotlight > 0.01F) {
             MenuScenes.glow(g, Math.round(mx), Math.round(my), 130, Theme.alpha(0xFFFFFF, 0.025F * config.menuSpotlight), 5);

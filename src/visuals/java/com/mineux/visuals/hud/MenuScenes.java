@@ -2,11 +2,21 @@ package com.mineux.visuals.hud;
 
 import com.mineux.visuals.ui.Theme;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.resources.Identifier;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * The main menu's scenes ({@link MenuScene}), each a full-screen picture made of the GUI's
  * rectangles and moving with time: an aurora over a ridge, a nebula of drifting glow, rain,
- * rising bokeh, silk threads, and a horizon grid under a striped sun. Every scene leans on the
+ * rising bokeh, silk threads, a horizon grid under a striped sun and a picture. Every scene leans on the
  * accent colour and moves its layers a little with the mouse ({@link Frame#px}, {@link Frame#py}).
  */
 final class MenuScenes {
@@ -15,6 +25,20 @@ final class MenuScenes {
     private static final int VIOLET = 0xFF9A6BFF;
     private static final int MAGENTA = 0xFFFF3D8A;
     private static final int SKY_BLUE = 0xFF6EA8FF;
+    private static final Path BACKGROUND_FILE =
+            FabricLoader.getInstance().getConfigDir()
+                    .resolve("mineux")
+                    .resolve("background")
+                    .resolve("background.png");
+
+    private static final Identifier BACKGROUND_ID =
+            Identifier.fromNamespaceAndPath("mineux", "background");
+
+    private static DynamicTexture backgroundTexture;
+    private static int backgroundWidth;
+    private static int backgroundHeight;
+
+
 
     private MenuScenes() {}
 
@@ -119,7 +143,7 @@ final class MenuScenes {
             int colour = Theme.alpha(ink, a);
             for (int x = 0; x < f.w; x += 5) {
                 float y = f.h * 0.5F + (float) Math.sin(x * 0.004F + f.t * 0.3F + j * 0.12F) * f.h * 0.18F
-                    + (float) Math.sin(x * 0.011F - f.t * 0.5F + j * 0.3F) * f.h * 0.06F + (j - lines / 2) * 3.0F + f.py * 10.0F;
+                    + (float) Math.sin(x * 0.011F - f.t * 0.5F + j * 0.3F) * f.h * 0.06F + (j - (float) lines / 2) * 3.0F + f.py * 10.0F;
                 g.fill(x, Math.round(y), x + 5, Math.round(y) + 1, colour);
             }
         }
@@ -155,6 +179,14 @@ final class MenuScenes {
             line(g, vx, horizon, f.w / 2.0F + i * f.w / 8.0F, f.h, line);
         }
         g.fillGradient(0, horizon - 2, f.w, horizon + 6, Theme.alpha(haze, 0.5F), Theme.alpha(haze, 0.0F));
+    }
+
+    static void picture(Frame f) {
+        if (backgroundTexture == null) {
+            loadImageBackground();
+        }
+
+        imageBackground(f);
     }
 
     // ---- drawing helpers ------------------------------------------------------------------------
@@ -204,5 +236,97 @@ final class MenuScenes {
         h *= 0x85EBCA6B;
         h ^= h >>> 13;
         return (h & 0xFFFFFF) / (float) 0x1000000;
+    }
+
+    static void loadImageBackground() {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (!mc.isSameThread()) {
+            mc.execute(MenuScenes::loadImageBackground);
+            return;
+        }
+
+        try {
+            Files.createDirectories(BACKGROUND_FILE.getParent());
+
+            if (!Files.isRegularFile(BACKGROUND_FILE)) {
+                unloadImageBackground();
+                return;
+            }
+
+            NativeImage image;
+            try (InputStream input = Files.newInputStream(BACKGROUND_FILE)) {
+                image = NativeImage.read(input);
+            }
+
+            int newWidth = image.getWidth();
+            int newHeight = image.getHeight();
+
+            DynamicTexture newTexture =
+                    new DynamicTexture(() -> "mineux_background", image);
+
+            // Replace the previously registered texture.
+            unloadImageBackground();
+
+            mc.getTextureManager().register(BACKGROUND_ID, newTexture);
+
+            backgroundTexture = newTexture;
+            backgroundWidth = newWidth;
+            backgroundHeight = newHeight;
+
+            System.out.println("[MineUX] Custom background loaded.");
+
+        } catch (Exception e) {
+            System.err.println("[MineUX] Failed to load custom background.");
+            e.printStackTrace();
+        }
+    }
+
+    static void unloadImageBackground() {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (backgroundTexture == null) return;
+
+        mc.getTextureManager().release(BACKGROUND_ID);
+
+        backgroundTexture = null;
+        backgroundWidth = 0;
+        backgroundHeight = 0;
+    }
+
+    static void imageBackground(Frame f) {
+        if (backgroundTexture == null) {
+            f.g.fill(0, 0, f.w, f.h, 0xFF080B12);
+            return;
+        }
+
+        float imageRatio = (float) backgroundWidth / backgroundHeight;
+        float screenRatio = (float) f.w / f.h;
+
+        int srcX = 0;
+        int srcY = 0;
+        int srcWidth = backgroundWidth;
+        int srcHeight = backgroundHeight;
+
+        // Crop the image to match the screen's aspect ratio.
+        if (imageRatio > screenRatio) {
+            srcWidth = (int) (backgroundHeight * screenRatio);
+            srcX = (backgroundWidth - srcWidth) / 2;
+        } else {
+            srcHeight = (int) (backgroundWidth / screenRatio);
+            srcY = (backgroundHeight - srcHeight) / 2;
+        }
+
+        f.g.blit(
+                RenderPipelines.GUI_TEXTURED,
+                BACKGROUND_ID,
+                0, 0,
+                (float) srcX / backgroundWidth,
+                (float) srcY / backgroundHeight,
+                f.w, f.h,
+                srcWidth, srcHeight,
+                backgroundWidth,
+                backgroundHeight
+        );
     }
 }

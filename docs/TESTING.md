@@ -106,7 +106,7 @@ gone.
 - [ ] scoreboard (glass card, either side)
 - [ ] chat (timestamps, repeats folded, glass background, slide-in)
 - [ ] main menu: `skin scene` puts the home desk over an animated scene (aurora, nebula,
-      rain, bokeh, silk, grid), with the parallax, spotlight, account card and accent colour.
+      rain, bokeh, silk, grid, picture), with the parallax, spotlight, account card and accent colour.
       `skin terminal` brings back the black.
 - [ ] theme textures: menus, buttons and hud sprites tinted toward the accent colour. Resources
       reload once the setting has stood still.

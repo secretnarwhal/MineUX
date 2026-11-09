@@ -34,7 +34,7 @@ public final class SkinConfig implements ConfigFile.Backed {
     static final Set<String> TIME_FORMATS = Words.of("24h 24hs 12h");
     static final Set<String> CORNERS = Words.of("topleft topright bottomleft bottomright");
     static final Set<String> MENU_SKINS = Words.of("terminal scene");
-    static final Set<String> SCENES = Words.of("aurora nebula rain bokeh silk grid");
+    static final Set<String> SCENES = Words.of("aurora nebula rain bokeh silk grid picture");
     static final Set<String> THEME_SCOPES = Words.of("gui all");
 
     // ---- crosshair -------------------------------------------------------------------------------
