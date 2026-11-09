@@ -69,6 +69,13 @@ sharing and social sections you need a second account and a second PC (or a frie
 - [ ] The Discord status shows up on your Discord profile when Discord is running (`rpc` in the
       `client` tray group).
 
+- [ ] **Desk scale.** At GUI scale 2, 3 and auto (Options, Video), the home desk, the Esc desk
+      and the Right Shift overlay look the same size, with crisp text; the HUD follows the
+      game's GUI scale. A click on a tray icon, a window drag and a scroll land where the cursor
+      is. `desk scale 3`, then `auto`, `1`, back to `2`: the desktop changes size at once, and
+      the settings window (`desk`) does the same. The friends app's skin preview and the tray's
+      item icons sit in their boxes at every scale. The greeter and the screens menu follow it.
+
 ## 3. Workstations (both editions)
 
 - [ ] `ws` lists them. `ws new test`, `ws open test`, `ws mv test t2`, `ws rm t2`. SUPER+1..9

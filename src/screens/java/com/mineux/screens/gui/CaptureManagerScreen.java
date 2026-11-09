@@ -1,5 +1,6 @@
 package com.mineux.screens.gui;
 
+import com.mineux.core.ui.DeskScreen;
 import com.mineux.screens.Screens;
 import com.mineux.screens.bridge.CaptureTarget;
 import com.mineux.screens.capture.CaptureManager;
@@ -9,16 +10,15 @@ import net.minecraft.client.gui.components.ScrollableLayout;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.layouts.LinearLayout;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.Nullable;
 
 /**
  * The screens menu, in the glass style ({@link GlassTheme}). Left: monitors and windows that can
  * be captured. Right ({@link ScreenPanel}): your screens, their placement, sharing and the
- * settings that apply to all of them.
+ * settings that apply to all of them. Drawn at the desk scale, as the desktop is ({@link DeskScreen}).
  */
-public class CaptureManagerScreen extends Screen {
+public class CaptureManagerScreen extends DeskScreen {
 
     static final int PADDING = 8;
     static final int HEADER_HEIGHT = 24;
@@ -59,7 +59,7 @@ public class CaptureManagerScreen extends Screen {
     }
 
     @Override
-    protected void init() {
+    protected void deskInit() {
         cardWidth = Math.min(width - 16, 560);
         cardHeight = Math.min(height - 16, 352);
         cardX = (width - cardWidth) / 2;
@@ -170,7 +170,7 @@ public class CaptureManagerScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTicks) {
+    protected void deskBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTicks) {
         extractBlurredBackground(g);
         g.fillGradient(0, 0, width, height, GlassTheme.SCRIM_TOP, GlassTheme.SCRIM_BOTTOM);
         GlassTheme.card(g, cardX, cardY, cardWidth, cardHeight);
@@ -193,8 +193,8 @@ public class CaptureManagerScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTicks) {
-        super.extractRenderState(g, mouseX, mouseY, partialTicks);
+    protected void deskRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTicks) {
+        super.deskRender(g, mouseX, mouseY, partialTicks);
         panel.preview(g);
     }
 }

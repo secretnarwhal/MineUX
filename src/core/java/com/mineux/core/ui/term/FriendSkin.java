@@ -1,5 +1,7 @@
 package com.mineux.core.ui.term;
 
+import com.mineux.core.ui.DeskScale;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import net.minecraft.client.Minecraft;
@@ -79,8 +81,12 @@ final class FriendSkin {
             hat.xRot = headPitch;
         }
 
-        float scale = 0.97f * (y1 - y0) / 2.125f;
-        g.skin(model, skin.body().texturePath(), scale, 0f - pitch * 0.15f, yaw * 0.33f, -1.0625f, x0, y0, x1, y1);
+        // The model is drawn by the game into a box of its own, which takes GUI corners and
+        // ignores the pose: the box goes through the pose here (the desk scale, a slide).
+        float scale = 0.97f * (y1 - y0) / 2.125f * DeskScale.poseScale(g);
+        int[] a = DeskScale.onScreen(g, x0, y0);
+        int[] b = DeskScale.onScreen(g, x1, y1);
+        g.skin(model, skin.body().texturePath(), scale, 0f - pitch * 0.15f, yaw * 0.33f, -1.0625f, a[0], a[1], b[0], b[1]);
     }
 
     /** Their face, flat, {@code size} px square: for the list. */

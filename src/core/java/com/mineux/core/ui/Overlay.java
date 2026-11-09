@@ -179,9 +179,11 @@ public final class Overlay {
         }
         Screen under = mc.gui.screen();
         blurTaken = under != null && !under.isInGameUi();
-        int w = g.guiWidth();
-        int h = g.guiHeight();
-        if (hosted.width != w || hosted.height != h) call(hosted, Call.RESIZE, null, null, 0, 0, w, h);
+        // A desk screen is laid out at the desk's size (DeskScale), not the GUI's.
+        boolean desk = DeskScreen.class.isInstance(hosted);
+        int w = desk ? DeskScale.width() : g.guiWidth();
+        int h = desk ? DeskScale.height() : g.guiHeight();
+        if (hosted.width != w || hosted.height != h) call(hosted, Call.RESIZE, null, null, 0, 0, g.guiWidth(), g.guiHeight());
         if (hosted == null) return;
         Window window = mc.getWindow();
         int mouseX = (int) mc.mouseHandler.getScaledXPos(window);

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.Window;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.Screen;
+import com.mineux.core.ui.DeskScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -36,7 +36,7 @@ import java.util.Locale;
  * After a sign-in or the guest choice the screen fades to black and hands the title screen on
  * ({@link #enter}), and the desk plays its boot sequence from that black.
  */
-public class GreeterScreen extends Screen {
+public class GreeterScreen extends DeskScreen {
 
     private static final int BOX_W = 272;
     private static final int BOX_H = 162;
@@ -137,7 +137,7 @@ public class GreeterScreen extends Screen {
     // ---- layout ---------------------------------------------------------
 
     @Override
-    protected void init() {
+    protected void deskInit() {
         lastLayout = System.currentTimeMillis();
         boxX = (width - BOX_W) / 2;
         boxY = Math.max(24, (height - BOX_H) / 2 - 12);
@@ -188,7 +188,7 @@ public class GreeterScreen extends Screen {
     // ---- rendering ------------------------------------------------------
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+    protected void deskBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         g.fill(0, 0, width, height, 0xFF000000);
         if (stage == RESUMING) return;
         String animation = ly.animation == null ? "" : ly.animation;
@@ -208,7 +208,7 @@ public class GreeterScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+    protected void deskRender(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         long now = System.currentTimeMillis();
         if (stage == RESUMING) {
             drawResuming(g, now);
@@ -229,7 +229,7 @@ public class GreeterScreen extends Screen {
         }
         register(g);
 
-        super.extractRenderState(g, mouseX, mouseY, delta);
+        super.deskRender(g, mouseX, mouseY, delta);
 
         if (stage == FADING || stage == DONE) {
             float t = stage == DONE ? 1f : Math.min(1f, (now - fadeStart) / (float) FADE_MS);
@@ -568,7 +568,7 @@ public class GreeterScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isHandled) {
+    protected boolean deskClicked(MouseButtonEvent event, boolean isHandled) {
         if (stage != IDLE) return true;
         double mx = event.x();
         double my = event.y();
@@ -577,7 +577,7 @@ public class GreeterScreen extends Screen {
         if (inButton(ROW_LOGIN, mx, my)) return clickRow(FOCUS_LOGIN);
         if (guestOffered && inButton(ROW_GUEST, mx, my)) return clickRow(FOCUS_GUEST);
 
-        boolean handled = super.mouseClicked(event, isHandled);
+        boolean handled = super.deskClicked(event, isHandled);
         if (getFocused() == userBox) focus = FOCUS_USER;
         else if (getFocused() == passBox) focus = FOCUS_PASS;
         return handled;

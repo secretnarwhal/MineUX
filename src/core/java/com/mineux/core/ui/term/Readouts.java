@@ -370,28 +370,43 @@ public final class Readouts {
             if (layer.on()) layer.draw(g, font);
         }
 
+        // The desk's own panes and cards, at the desk scale as on the desk (DeskScale): a pane
+        // pinned there is the same size in the same place over the game. The layers above are
+        // the HUD's, at the game's GUI scale.
+        g.pose().pushMatrix();
+        try {
+            float f = com.mineux.core.ui.DeskScale.factor();
+            if (f != 1f) g.pose().scale(f, f);
+            drawPanes(g, font, mc, com.mineux.core.ui.DeskScale.width(), com.mineux.core.ui.DeskScale.height());
+        } finally {
+            g.pose().popMatrix();
+        }
+    }
+
+    /** The readouts, the confirmations, friend news and the pinned panes, on a desk {@code w} by {@code h}. */
+    private static void drawPanes(GuiGraphicsExtractor g, Font font, Minecraft mc, int w, int h) {
         Desk desk = Desk.of(Workstations.current());
-        sync(desk, g.guiWidth(), g.guiHeight());
+        sync(desk, w, h);
 
         long now = System.currentTimeMillis();
         List<Term.Hit> ignored = new ArrayList<>();
         for (Pane pane : desk.windows) {
             if (pane.readout() == null || pane.onAll) continue;
-            if (pane.floating) clampFloating(pane, g.guiWidth(), g.guiHeight());
+            if (pane.floating) clampFloating(pane, w, h);
             pane.snap();
             pane.draw(g, font, now, -1, -1, false, ignored, null);
         }
 
         // Pinned panes and the confirmations are gone with the HUD (F1).
         if (mc.gui.hud.isHidden()) return;
-        Notify.draw(g, font, g.guiWidth(), g.guiHeight(), now);
+        Notify.draw(g, font, w, h, now);
         // News about a friend, at the top: see the note in FriendBanner for why it is not
         // another colour of confirmation card down by the hotbar.
-        FriendBanner.draw(g, font, g.guiWidth(), now);
+        FriendBanner.draw(g, font, w, now);
         // Every pinned pane, whichever desk it is on, where it was last shown: floating where it floats, tiled where its tile was.
         for (Pane pin : new ArrayList<>(Desk.PINS)) {
             if (Group.hidden(pin)) continue;
-            if (pin.floating) clampFloating(pin, g.guiWidth(), g.guiHeight());
+            if (pin.floating) clampFloating(pin, w, h);
             pin.snap();
             pin.draw(g, font, now, -1, -1, false, ignored, null);
         }
