@@ -1,14 +1,17 @@
 package com.mineux.visuals.hud;
 
+import com.mineux.core.config.ConfigFile;
 import com.mineux.visuals.ui.Theme;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import com.mojang.blaze3d.platform.NativeImage;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,8 +19,8 @@ import java.nio.file.Path;
 /**
  * The main menu's scenes ({@link MenuScene}), each a full-screen picture made of the GUI's
  * rectangles and moving with time: an aurora over a ridge, a nebula of drifting glow, rain,
- * rising bokeh, silk threads, a horizon grid under a striped sun and a picture. Every scene leans on the
- * accent colour and moves its layers a little with the mouse ({@link Frame#px}, {@link Frame#py}).
+ * rising bokeh, silk threads, a horizon grid under a striped sun, and a picture of your own
+ * ({@code config/mineux/background/background.png}). Every drawn scene leans on the accent colour and moves its layers a little with the mouse ({@link Frame#px}, {@link Frame#py}).
  */
 final class MenuScenes {
 
@@ -25,21 +28,20 @@ final class MenuScenes {
     private static final int VIOLET = 0xFF9A6BFF;
     private static final int MAGENTA = 0xFFFF3D8A;
     private static final int SKY_BLUE = 0xFF6EA8FF;
-    private static final Path BACKGROUND_FILE =
-            FabricLoader.getInstance().getConfigDir()
-                    .resolve("mineux")
-                    .resolve("background")
-                    .resolve("background.png");
 
-    private static final Identifier BACKGROUND_ID =
-            Identifier.fromNamespaceAndPath("mineux", "background");
-
-    private static DynamicTexture backgroundTexture;
-    private static int backgroundWidth;
-    private static int backgroundHeight;
-
-
-
+    // ---- the picture scene ----------------------------------------------------------------------
+    private static final Logger LOGGER = LoggerFactory.getLogger("mineux/menu");
+    private static final Identifier PICTURE_ID = Identifier.fromNamespaceAndPath("mineux", "menu_picture");
+    /** How often the picture's file is looked at: a new one shows within this, without a restart. */
+    private static final long CHECK_MS = 1000L;
+    private static final long MISSING = Long.MIN_VALUE;
+    private static DynamicTexture picture;
+    private static int pictureWidth;
+    private static int pictureHeight;
+    /** The file's time and size when last read (or found unreadable): read again only when it changes. */
+    private static long pictureStamp = MISSING;
+    private static long pictureCheckedAt;
+    private static boolean pictureFolderMade;
     private MenuScenes() {}
 
     /** One frame's canvas: where to draw, how large, the time in seconds, the accent, and the mouse's pull (-1 to 1). */
@@ -181,12 +183,14 @@ final class MenuScenes {
         g.fillGradient(0, horizon - 2, f.w, horizon + 6, Theme.alpha(haze, 0.5F), Theme.alpha(haze, 0.0F));
     }
 
+    /** Your own picture, cropped to fill the screen; the plain dark until there is one. */
     static void picture(Frame f) {
-        if (backgroundTexture == null) {
-            loadImageBackground();
+        long now = System.currentTimeMillis();
+        if (now - pictureCheckedAt >= CHECK_MS || now < pictureCheckedAt) {
+            pictureCheckedAt = now;
+            refreshPicture();
         }
-
-        imageBackground(f);
+        drawPicture(f);
     }
 
     // ---- drawing helpers ------------------------------------------------------------------------
@@ -238,95 +242,85 @@ final class MenuScenes {
         return (h & 0xFFFFFF) / (float) 0x1000000;
     }
 
-    static void loadImageBackground() {
-        Minecraft mc = Minecraft.getInstance();
+    /** Where the picture goes: {@code config/mineux/background/background.png}. */
+    static Path pictureFile() {
+        return ConfigFile.directory().resolve("background").resolve("background.png");
+    }
 
-        if (!mc.isSameThread()) {
-            mc.execute(MenuScenes::loadImageBackground);
+    /** Reads the picture again when its file has changed (or went away); otherwise does nothing. */
+    private static void refreshPicture() {
+        Path file = pictureFile();
+        if (!pictureFolderMade) {
+            pictureFolderMade = true;
+            try {
+                Files.createDirectories(file.getParent());
+            } catch (IOException | RuntimeException e) {
+                LOGGER.warn("could not make the menu picture folder {}", file.getParent(), e);
+            }
+        }
+        long stamp = stamp(file);
+        if (stamp == pictureStamp) return;
+        pictureStamp = stamp;
+        if (stamp == MISSING) {
+            releasePicture();
             return;
         }
-
-        try {
-            Files.createDirectories(BACKGROUND_FILE.getParent());
-
-            if (!Files.isRegularFile(BACKGROUND_FILE)) {
-                unloadImageBackground();
-                return;
-            }
-
-            NativeImage image;
-            try (InputStream input = Files.newInputStream(BACKGROUND_FILE)) {
-                image = NativeImage.read(input);
-            }
-
-            int newWidth = image.getWidth();
-            int newHeight = image.getHeight();
-
-            DynamicTexture newTexture =
-                    new DynamicTexture(() -> "mineux_background", image);
-
-            // Replace the previously registered texture.
-            unloadImageBackground();
-
-            mc.getTextureManager().register(BACKGROUND_ID, newTexture);
-
-            backgroundTexture = newTexture;
-            backgroundWidth = newWidth;
-            backgroundHeight = newHeight;
-
-            System.out.println("[MineUX] Custom background loaded.");
-
-        } catch (Exception e) {
-            System.err.println("[MineUX] Failed to load custom background.");
-            e.printStackTrace();
+        try (InputStream in = Files.newInputStream(file)) {
+            NativeImage image = NativeImage.read(in);
+            int width = image.getWidth();
+            int height = image.getHeight();
+            DynamicTexture texture = new DynamicTexture(() -> "mineux_menu_picture", image);
+            releasePicture();
+            Minecraft.getInstance().getTextureManager().register(PICTURE_ID, texture);
+            picture = texture;
+            pictureWidth = width;
+            pictureHeight = height;
+            LOGGER.info("menu picture loaded ({}x{})", width, height);
+        } catch (IOException | RuntimeException e) {
+            // Said once per version of the file: the stamp is kept, so it is not tried again until it changes.
+            LOGGER.warn("could not read the menu picture {} (it must be a PNG)", file, e);
         }
     }
 
-    static void unloadImageBackground() {
-        Minecraft mc = Minecraft.getInstance();
-
-        if (backgroundTexture == null) return;
-
-        mc.getTextureManager().release(BACKGROUND_ID);
-
-        backgroundTexture = null;
-        backgroundWidth = 0;
-        backgroundHeight = 0;
+    /** Changes when the file does (its time and size); {@link #MISSING} while it is not there. */
+    private static long stamp(Path file) {
+        try {
+            if (!Files.isRegularFile(file)) return MISSING;
+            return Files.getLastModifiedTime(file).toMillis() * 31L + Files.size(file);
+        } catch (IOException | RuntimeException e) {
+            return MISSING;
+        }
     }
 
-    static void imageBackground(Frame f) {
-        if (backgroundTexture == null) {
+    private static void releasePicture() {
+        if (picture == null) return;
+        Minecraft.getInstance().getTextureManager().release(PICTURE_ID);
+        picture = null;
+        pictureWidth = 0;
+        pictureHeight = 0;
+    }
+
+    /** The picture over the whole screen, its middle cut to the screen's shape (no stretching). */
+    private static void drawPicture(Frame f) {
+        if (picture == null || pictureWidth <= 0 || pictureHeight <= 0 || f.w <= 0 || f.h <= 0) {
             f.g.fill(0, 0, f.w, f.h, 0xFF080B12);
             return;
         }
-
-        float imageRatio = (float) backgroundWidth / backgroundHeight;
+        float imageRatio = (float) pictureWidth / pictureHeight;
         float screenRatio = (float) f.w / f.h;
-
         int srcX = 0;
         int srcY = 0;
-        int srcWidth = backgroundWidth;
-        int srcHeight = backgroundHeight;
-
-        // Crop the image to match the screen's aspect ratio.
+        int srcWidth = pictureWidth;
+        int srcHeight = pictureHeight;
         if (imageRatio > screenRatio) {
-            srcWidth = (int) (backgroundHeight * screenRatio);
-            srcX = (backgroundWidth - srcWidth) / 2;
+            srcWidth = Math.max(1, Math.round(pictureHeight * screenRatio));
+            srcX = (pictureWidth - srcWidth) / 2;
         } else {
-            srcHeight = (int) (backgroundWidth / screenRatio);
-            srcY = (backgroundHeight - srcHeight) / 2;
+            srcHeight = Math.max(1, Math.round(pictureWidth / screenRatio));
+            srcY = (pictureHeight - srcHeight) / 2;
         }
-
-        f.g.blit(
-                RenderPipelines.GUI_TEXTURED,
-                BACKGROUND_ID,
-                0, 0,
-                (float) srcX / backgroundWidth,
-                (float) srcY / backgroundHeight,
-                f.w, f.h,
-                srcWidth, srcHeight,
-                backgroundWidth,
-                backgroundHeight
-        );
+        // u and v are in the picture's pixels: blit divides by its size itself.
+        f.g.blit(RenderPipelines.GUI_TEXTURED, PICTURE_ID, 0, 0, srcX, srcY, f.w, f.h,
+            srcWidth, srcHeight, pictureWidth, pictureHeight);
     }
 }

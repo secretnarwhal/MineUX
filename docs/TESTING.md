@@ -114,6 +114,9 @@ gone.
 - [ ] chat (timestamps, repeats folded, glass background, slide-in)
 - [ ] main menu: `skin scene` puts the home desk over an animated scene (aurora, nebula,
       rain, bokeh, silk, grid, picture), with the parallax, spotlight, account card and accent colour.
+      picture: dark until `config/mineux/background/background.png` exists; a wide and a tall
+      PNG both fill the screen centred, unstretched; replacing the file shows the new one
+      within a second; a broken file leaves the dark and one warning in the log.
       `skin terminal` brings back the black.
 - [ ] theme textures: menus, buttons and hud sprites tinted toward the accent colour. Resources
       reload once the setting has stood still.

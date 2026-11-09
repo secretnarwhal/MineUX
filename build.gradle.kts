@@ -249,16 +249,22 @@ for (check in listOf("HoistCheck", "PureCheck", "SwitchCheck")) {
 }
 
 // ---- private brand checks: optional, skipped when their files are absent -----------------------
-// tools/brand_words.txt feeds the rebrand tests (BrandWords); tools/brand_check.py scans the
-// built jars. Neither is part of a published snapshot, and the build passes without them.
-val brandWords = layout.projectDirectory.file("tools/brand_words.txt").asFile
+// brand_words.txt feeds the rebrand tests (BrandWords); brand_check.py scans the built jars.
+// Neither is in this repo: they are looked for in tools/ here, then in a private checkout beside
+// this one (-PmineuxPrivate=<dir>, default ../mineux-private), and the build passes without them.
+val privateTools = listOf(
+    layout.projectDirectory.dir("tools").asFile,
+    File(providers.gradleProperty("mineuxPrivate").map { file(it) }.getOrElse(file("../mineux-private")), "tools"),
+)
+fun privateTool(name: String): File = privateTools.map { File(it, name) }.firstOrNull { it.isFile } ?: File(privateTools[0], name)
+val brandWords = privateTool("brand_words.txt")
 tasks.withType<Test>().configureEach {
     if (brandWords.isFile) {
         val words = brandWords.readLines().map { it.trim() }.filter { it.isNotEmpty() && !it.startsWith("#") }
         systemProperty("mineux.brandWords", words.joinToString(","))
     }
 }
-val brandScript = layout.projectDirectory.file("tools/brand_check.py").asFile
+val brandScript = privateTool("brand_check.py")
 val brandCheck = tasks.register("brandCheck") {
     group = "verification"
     description = "tools/brand_check.py over both jars, when that script is present."
@@ -266,7 +272,7 @@ val brandCheck = tasks.register("brandCheck") {
     val jars = listOf(tasks.jar.flatMap { it.archiveFile }, liteJar.flatMap { it.archiveFile })
     doLast {
         if (!brandScript.isFile) {
-            logger.lifecycle("brandCheck: tools/brand_check.py is not here, skipped")
+            logger.lifecycle("brandCheck: brand_check.py not found (tools/ or the private checkout), skipped")
             return@doLast
         }
         val exe = if (System.getProperty("os.name").startsWith("Windows")) ".exe" else ""

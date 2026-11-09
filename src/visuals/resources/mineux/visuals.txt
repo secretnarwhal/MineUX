@@ -238,7 +238,7 @@ set speed chatSpeed min=0.2 max=5 | how fast it comes in
 
 dir menu cfg=hudskin | the main menu's look: the terminal desktop over black, or over an animated scene
 set skin menuSkin choices=terminal;scene | terminal: as ever; scene: the same desktop over an animated scene
-set scene menuScene choices=aurora;nebula;rain;bokeh;silk;grid;picture | which scene
+set scene menuScene choices=aurora;nebula;rain;bokeh;silk;grid;picture | which scene (picture: your own PNG at config/mineux/background/background.png)
 set speed menuSpeed min=0 max=3 | how fast it moves
 set parallax menuParallax | moves a little with the mouse
 set spotlight menuSpotlight min=0 max=2 | a soft light following the cursor

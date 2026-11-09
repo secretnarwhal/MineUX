@@ -10,7 +10,7 @@ effects, and cosmetics. **Screens** puts your monitors and windows in the world 
 optional [mineux.com](https://mineux.com) account adds friends, DMs and chat. You can skip it and
 play as a guest.
 
-![The home desk: the bar, a terminal and the fetch with its campfire](https://mineux.com/showcase/home-desk.png)
+![The home desk: the bar, a terminal and the fetch with its campfire](https://mineux.com/showcase/home-desk.webp)
 
 ---
 
@@ -52,6 +52,8 @@ It is all set in a real **`hyprland.conf`** (`dotfiles` opens it): gaps, borders
 gradients, bezier curves and animations, binds. Saved changes apply at once. `hyprctl reload`,
 `hyprctl keyword`, `hyprctl binds`, `hyprctl dispatch` and `hyprctl configerrors` work the way you
 would expect.
+
+![Windows tiling as they open, move and close, in a world](https://mineux.com/showcase/tiling.webp)
 
 ![Three tiled terminals: the home desk, bonsai and pipes.sh](https://mineux.com/showcase/tiling.png)
 
@@ -121,7 +123,7 @@ the server. Each module starts off, so turn on what you want.
 
 ### <img src="https://mineux.com/showcase/icon-compass.png" width="32" alt=""> hud: your screen's overlay
 
-<img src="https://mineux.com/showcase/group-hud.png" height="32" alt="crosshair, hotbar, scoreboard, chat, main menu, theme textures">
+<img src="https://mineux.com/showcase/modules-hud.png" height="32" alt="crosshair, hotbar, scoreboard, chat, main menu, theme textures">
 
 - **Crosshair**: any shape, size and colour (or rainbow). It opens out as you move, marks your hits,
   bursts on a kill and rings the attack charge.
@@ -137,7 +139,7 @@ the server. Each module starts off, so turn on what you want.
 
 ### <img src="https://mineux.com/showcase/icon-sunflower.png" width="32" alt=""> world: the world on your screen
 
-<img src="https://mineux.com/showcase/group-world.png" height="32" alt="ambience, no render, totem pop, hit effects, sky shaders, world shaders, particles, item physics">
+<img src="https://mineux.com/showcase/modules-world.png" height="32" alt="ambience, no render, totem pop, hit effects, sky shaders, world shaders, particles, item physics">
 
 - **Sky shaders**: the sky drawn by a shader of its own, from 27 presets (aurora, galaxy, black hole,
   thunderstorm, nebula, synthwave, blood moon...). The fog takes the sky's horizon colour.
@@ -155,7 +157,7 @@ the server. Each module starts off, so turn on what you want.
 
 ### <img src="https://mineux.com/showcase/icon-spyglass.png" width="32" alt=""> camera: your camera and your hand
 
-<img src="https://mineux.com/showcase/group-camera.png" height="32" alt="zoom, freelook, camera tweaks, smooth camera, motion blur, auto f5, no fov, no bob, no hurt cam, stretched, clear weather, view model, hand view, animations, swing speed, no swing, inspect, glint colour, hand shaders">
+<img src="https://mineux.com/showcase/modules-camera.png" height="32" alt="zoom, freelook, camera tweaks, smooth camera, motion blur, auto f5, no fov, no bob, no hurt cam, stretched, clear weather, view model, hand view, animations, swing speed, no swing, inspect, glint colour, hand shaders">
 
 - **Zoom** (the mouse slows to match), **freelook**, third-person distance, **smooth camera** and
   **motion blur** (the hand and HUD stay sharp).
@@ -175,7 +177,7 @@ These only change what is drawn. Your real swing, its timing and its packets sta
 
 ### <img src="https://mineux.com/showcase/icon-armor_stand.png" width="32" alt=""> self: your own player as you see it
 
-<img src="https://mineux.com/showcase/group-self.png" height="32" alt="body view, move animations, cosmetics, jump effect, player model, skin changer, armour shaders, cursor trail, fake cursor">
+<img src="https://mineux.com/showcase/modules-self.png" height="32" alt="body view, move animations, cosmetics, jump effect, player model, skin changer, armour shaders, cursor trail, fake cursor">
 
 - **Cosmetics**: a cape, wings, a hat, an aura, a kill effect and a pet that follows you. They are
   drawn on your client only and nobody else sees them.

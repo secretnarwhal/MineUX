@@ -66,15 +66,14 @@ final class MenuScene {
 
         MenuScenes.Frame frame = new MenuScenes.Frame(g, width, height, t, accent, parallaxX, parallaxY);
         String scene = config.menuScene;
-        switch (scene) {
-            case "nebula": MenuScenes.nebula(frame); break;
-            case "rain": MenuScenes.rain(frame); break;
-            case "bokeh": MenuScenes.bokeh(frame); break;
-            case "silk": MenuScenes.silk(frame); break;
-            case "grid": MenuScenes.grid(frame); break;
-            case "picture": MenuScenes.picture(frame); break;
-            default: MenuScenes.aurora(frame); break;
-        }
+        // An if chain, not a switch on the string: the obfuscator cannot take those (switchCheck).
+        if (Objects.equals("nebula", scene)) MenuScenes.nebula(frame);
+        else if (Objects.equals("rain", scene)) MenuScenes.rain(frame);
+        else if (Objects.equals("bokeh", scene)) MenuScenes.bokeh(frame);
+        else if (Objects.equals("silk", scene)) MenuScenes.silk(frame);
+        else if (Objects.equals("grid", scene)) MenuScenes.grid(frame);
+        else if (Objects.equals("picture", scene)) MenuScenes.picture(frame);
+        else MenuScenes.aurora(frame);
 
         if (config.menuSpotlight > 0.01F) {
             MenuScenes.glow(g, Math.round(mx), Math.round(my), 130, Theme.alpha(0xFFFFFF, 0.025F * config.menuSpotlight), 5);

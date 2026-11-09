@@ -233,23 +233,21 @@ GROUPS = {
 
 
 def strips(icons_dir, out_dir, size=64, gap=12):
-    """A strip per group: its icon, a divider, then its rows, on a transparent background."""
+    """A strip per group of just its modules' items (the group's own icon, the list's first, is the
+    section heading's), on a transparent background: modules-<group>.png."""
     os.makedirs(out_dir, exist_ok=True)
     for name, items in GROUPS.items():
-        n = len(items)
-        w = n * size + (n - 1) * gap + gap * 2
+        rows = items[1:]
+        n = len(rows)
+        w = n * size + (n - 1) * gap
         img = Image.new("RGBA", (w, size), (0, 0, 0, 0))
         x = 0
-        for i, item in enumerate(items):
+        for item in rows:
             icon = Image.open(os.path.join(icons_dir, item + ".png")).resize((size, size), Image.NEAREST)
             img.alpha_composite(icon, (x, 0))
             x += size + gap
-            if i == 0:  # a thin divider after the group's own icon
-                for y in range(size // 6, size - size // 6):
-                    img.putpixel((x - gap // 2 + gap // 2, y), (200, 160, 60, 200))
-                x += gap * 2
-        img.save(os.path.join(out_dir, name + ".png"), optimize=True)
-        print("strip", name)
+        img.save(os.path.join(out_dir, "modules-" + name + ".png"), optimize=True)
+        print("strip", name, n, "modules")
 
 
 def main():
