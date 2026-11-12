@@ -3,6 +3,8 @@ package com.mineux.core.ui.term;
 import com.mineux.core.MineUX;
 import com.mineux.core.Backdrop;
 import com.mineux.core.DeskExtensions;
+import com.mineux.core.greeter.Greeter;
+import com.mineux.core.greeter.GreeterScreen;
 import com.mineux.core.greeter.LyConfig;
 import com.mineux.core.ui.DeskScreen;
 import com.mineux.core.ui.Overlay;
@@ -1379,7 +1381,7 @@ public class TerminalScreen extends DeskScreen implements Desktop {
     /** Right side, right to left: the clock, fps, the module tray, the layout, the config (or who you play as). */
     private int drawBarRight(GuiGraphicsExtractor g, Font font, int mouseX, int mouseY, Desk desk, String current) {
         int ty = (BAR_H - 8) / 2;
-        int rx = drawAccount(g, font, drawSocial(g, font, width - 4, mouseX, mouseY), mouseX, mouseY);
+        int rx = drawSocial(g, font, drawAccount(g, font, width - 4, mouseX, mouseY), mouseX, mouseY);
         String clock = LocalTime.now().format(CLOCK);
         rx -= font.width(clock);
         g.text(font, clock, rx, ty, FG, false);
@@ -1487,20 +1489,25 @@ public class TerminalScreen extends DeskScreen implements Desktop {
     }
 
     /**
-     * Who is signed in to MineUX, left of the friends count: the account's name, or "guest".
-     * A click runs {@code whoami} in the desk's terminal, which offers login or logout.
+     * Text is person signed in to MineUX or says login, right of the friends count: the account's name, or "Login".
+     * A click runs {@code login} in the desk's terminal if text is Login, else it runs {@code whomai}.
      */
     private int drawAccount(GuiGraphicsExtractor g, Font font, int right, int mouseX, int mouseY) {
         int ty = (BAR_H - 8) / 2;
         boolean signedIn = com.mineux.core.net.MuxApi.signedIn();
-        String who = signedIn ? com.mineux.core.net.MuxApi.user() : "guest";
-        if (who == null || who.isEmpty()) who = "guest";
-        int w = font.width(who) + 6;
+        String text = signedIn ? com.mineux.core.net.MuxApi.user() : "login";
+        if (text == null || text.isEmpty()) text = "login";
+        int w = font.width(text) + 6;
         int x = right - w;
         boolean hot = mouseX >= x && mouseX < right && mouseY < BAR_H - 1;
-        if (hot) g.fill(x, 0, right, BAR_H - 1, 0x22FFFFFF);
-        g.text(font, who, x + 3, ty, signedIn ? GOLD : hot ? FG : FAINT, false);
-        Span span = new Span(who, FG);
+        if (hot) g.fill(x, 0, x + w, BAR_H - 1, 0x22FFFFFF);
+        if (!signedIn) g.text(font, text, x + 3, ty, 0xFFFFFFFF, false);
+        else if (hot) g.text(font, text, x + 3, ty, 0xFFEFC648, false);
+        Span span = new Span(text, FG);
+        Minecraft mc = Minecraft.getInstance();
+        if (!signedIn) {
+            span.action = () -> Greeter.show();
+        } else
         span.run = "whoami";
         span.hint = signedIn ? "your MineUX account" : "not signed in: whoami, then login";
         hits.add(new Hit(x, 0, right, BAR_H - 1, null, span, -1, null, ACT_NONE));

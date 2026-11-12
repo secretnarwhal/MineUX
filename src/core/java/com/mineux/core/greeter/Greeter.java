@@ -39,6 +39,8 @@ public final class Greeter {
     public static boolean intercept(TitleScreen title) {
         if (hostSignsIn()) return false;
         configure();
+        if (Account.firstLaunchDone()) return false;
+        Account.setFirstLaunchDone();
         if (passed) return false;
         Minecraft.getInstance().gui.setScreen(new GreeterScreen(title, takeResume()));
         return true;

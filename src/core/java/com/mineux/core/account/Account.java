@@ -62,6 +62,10 @@ public final class Account {
         return store().rememberMe;
     }
 
+    public static synchronized boolean firstLaunchDone() {
+        return store().firstLaunchDone;
+    }
+
     /** The user name the greeter fills in: the remembered one, or empty. */
     public static synchronized String lastUser() {
         SessionStore s = store();
@@ -75,6 +79,12 @@ public final class Account {
         s.rememberMe = me;
         if (!user) s.lastUser = "";
         if (!me) s.forgetSession();
+        s.save();
+    }
+
+    public static synchronized void setFirstLaunchDone() {
+        SessionStore s = store();
+        s.firstLaunchDone = true;
         s.save();
     }
 

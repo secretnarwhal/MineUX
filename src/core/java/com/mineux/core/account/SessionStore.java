@@ -32,6 +32,8 @@ public final class SessionStore {
     public boolean rememberUser = true;
     /** Tick "stay signed in": the token is kept, and the next launch skips the greeter while it is good. */
     public boolean rememberMe = true;
+    /** First launch, is login screen shown first time. */
+    public boolean firstLaunchDone = false;
     /** The user name the greeter fills in; empty for none. */
     public String lastUser = "";
     /** The remembered session's user, token and API base; null token for none. */
@@ -71,8 +73,10 @@ public final class SessionStore {
             JsonElement root = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
             if (!root.isJsonObject()) return this;
             JsonObject o = root.getAsJsonObject();
+
             rememberUser = bool(o, "rememberUser", rememberUser);
             rememberMe = bool(o, "rememberMe", rememberMe);
+            firstLaunchDone = bool(o, "firstLaunchDone", firstLaunchDone);
             String last = MuxClient.string(o, "lastUser");
             lastUser = last == null ? "" : last;
             sessionUser = MuxClient.string(o, "sessionUser");
@@ -92,6 +96,7 @@ public final class SessionStore {
         o.addProperty("v", 1);
         o.addProperty("rememberUser", rememberUser);
         o.addProperty("rememberMe", rememberMe);
+        o.addProperty("firstLaunchDone", firstLaunchDone);
         o.addProperty("lastUser", rememberUser && lastUser != null ? lastUser : "");
         if (rememberMe && token != null) {
             o.addProperty("sessionUser", sessionUser);
